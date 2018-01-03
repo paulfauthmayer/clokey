@@ -1,5 +1,9 @@
 (ns clokey.core
-  (:gen-class))
+  (:gen-class
+    (:import [java.util.Date]
+             [java.time])
+    (:require '[crypto.password.bcrypt :as password]
+              '[clojure.string :as string])))
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -20,15 +24,17 @@
 
 (defn valid?)
 
-
 ; User Management
-{:name "Alex da G" :mpw "encrypted-pw"
- :accounts 
- [{:source "facebook.com"
-   :username "bigtittyanimegurl"
-   :pw "encrypted-pw"}
-  {}
-  {}]}
+
+(def example-user
+  {:name "Alex da G"
+   :mpw "encrypted-pw"
+   :accounts
+   [{:source "facebook.com"
+     :username "alexdag"
+     :pw "encrypted-pw"}
+    {}
+    {}]})
 
 (defn create-user)
 
@@ -40,7 +46,9 @@
 
 ; Security
 
-(defn encrypt)
+(defn encrypt) ;--> bcrypt
+
+(def encrypted (crypto.password.bcrypt/encrypt "foobar"))
 
 (defn decrypt)
 
