@@ -1,9 +1,6 @@
 (ns clokey.core
-  (:gen-class
-    (:import [java.util.Date]
-             [java.time])
-    (:require [crypto.password.bcrypt :as password]
-              [clojure.string :as string])))
+  (:require [crypto.password.bcrypt :as password]
+            [clojure.string :as string]))
 
 (defn -main
   "I don't do a whole lot ... yet."
