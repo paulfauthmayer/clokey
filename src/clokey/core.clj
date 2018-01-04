@@ -11,15 +11,20 @@
 
 ; CRUD + Validation
 
-(defn create-password)
+(defn create-password []
+  (* 1 1))
 
-(defn read-password)
+(defn read-password []
+  (* 1 1))
 
-(defn update-password)
+(defn update-password []
+  (* 1 1))
 
-(defn delete-passward)
+(defn delete-passward []
+  (* 1 1))
 
-(defn valid?)
+(defn valid? []
+  (* 1 1))
 
 ; User Management
 
@@ -33,24 +38,32 @@
     {}
     {}]})
 
-(defn create-user)
+(defn create-user []
+  (* 1 1))
 
-(defn get-user)
+(defn get-user []
+  (* 1 1))
 
-(defn delete-user)
+(defn delete-user []
+  (* 1 1))
 
-(defn update-user)
+(defn update-user []
+  (* 1 1))
 
 ; Security
 
-(defn encrypt) ;--> bcrypt
+(defn encrypt []
+  (* 1 1)) ;--> bcrypt
 
 (def encrypted (password/encrypt "foobar"))
 
 (def check (password/check "foobar" encrypted))
 
-(defn decrypt)
+(defn decrypt []
+  (* 1 1))
 
-(defn authenticate)
+(defn authenticate []
+  (* 1 1))
 
-(defn authenticated?)
+(defn authenticated? []
+  (* 1 1))
