@@ -1,4 +1,4 @@
-(ns clokey.
+(ns clokey.pass
   (:require [crypto.password.bcrypt :as password]
             [clojure.string :as string]))
 
