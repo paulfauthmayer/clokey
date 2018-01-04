@@ -1,7 +1,7 @@
 (ns clokey.user
   (:require [crypto.password.bcrypt :as password]
-            [clojure.string :as string]))
-
+            [clojure.string :as string]
+            [clokey.pass :as pass]))
 ;; EXAMPLE USERS
 
 (def example-user
@@ -16,11 +16,11 @@
 
 (def example-user-encrypted
   {:name "Max Mustermann"
-   :mpw (create-password "master-pw")
+   :mpw (pass/create-password "master-pw")
    :accounts
    [{:source "facebook.com"
      :username "max"
-     :pw (create-password "fb-pw")}
+     :pw (pass/create-password "fb-pw")}
     {}
     {}]})
 
