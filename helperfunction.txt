@@ -1,0 +1,3 @@
+#JAVA CLASS LOADER TO SHOW LOADED LIBRARIES
+
+(println (seq (.getURLs (java.lang.ClassLoader/getSystemClassLoader))))
