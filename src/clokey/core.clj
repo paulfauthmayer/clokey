@@ -2,8 +2,8 @@
   (:gen-class
     (:import [java.util.Date]
              [java.time])
-    (:require '[crypto.password.bcrypt :as password]
-              '[clojure.string :as string])))
+    (:require [crypto.password.bcrypt :as password]
+              [clojure.string :as string])))
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -48,7 +48,9 @@
 
 (defn encrypt) ;--> bcrypt
 
-(def encrypted (crypto.password.bcrypt/encrypt "foobar"))
+(def encrypted (password/encrypt "foobar"))
+
+(def check (password/check "foobar" encrypted))
 
 (defn decrypt)
 
