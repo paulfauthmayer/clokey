@@ -11,8 +11,7 @@
 
 ; CRUD + Validation
 
-(defn create-password []
-  (* 1 1))
+(defn create-password [pw] (encrypt pw))
 
 (defn read-password []
   (* 1 1))
@@ -38,6 +37,16 @@
     {}
     {}]})
 
+(def example-user-encrypted
+  {:name "Max Mustermann"
+   :mpw (create-password "master-pw")
+   :accounts
+   [{:source "facebook.com"
+     :username "max"
+     :pw (create-password "fb-pw")}
+    {}
+    {}]})
+
 (defn create-user []
   (* 1 1))
 
@@ -52,12 +61,8 @@
 
 ; Security
 
-(defn encrypt []
-  (* 1 1)) ;--> bcrypt
-
-(def encrypted (password/encrypt "foobar"))
-
-(def check (password/check "foobar" encrypted))
+(defn encrypt [pw]
+  (password/encrypt pw))
 
 (defn decrypt []
   (* 1 1))
