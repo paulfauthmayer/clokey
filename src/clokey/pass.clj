@@ -4,15 +4,24 @@
 
 ;; CRUD
 
-(defn create-password [pw] (encrypt pw))
+(defn create-entry
+  "creates entry"
+  ([source username pw]
+   {:source source
+    :username (encrypt username)
+    :password (encrypt pw)})
+  ([source username]
+   {:source source
+    :username (encrypt username)
+    :password (encrypt generate-password)}))
 
-(defn read-password []
+(defn read-entry []
   (* 1 1))
 
-(defn update-password []
+(defn update-entry []
   (* 1 1))
 
-(defn delete-passward []
+(defn delete-entry []
   (* 1 1))
 
 ;; VALIDATION
@@ -23,7 +32,13 @@
 ;; ENCRYPTION
 
 (defn encrypt [pw]
-  (password/encrypt pw))
+  pw)
 
 (defn decrypt []
   (* 1 1))
+
+;; GENERATE PASSWORD
+
+(defn generate-password
+  []
+  ("HARDCODED-PASSWORD"))
