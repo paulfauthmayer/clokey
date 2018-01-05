@@ -50,5 +50,9 @@
 (defn generate-password
   ([] (generate-password 10))
   ([length]
-   (let [valid-chars (map char (range 33 127))]
-     (take length (repeatedly (rand-nth valid-chars))))))
+   ; Note: the range refers to the numbers assigned to chars in the ASCII charset
+   ; for reference: http://www.asciitable.com
+   (let [valid-chars (map char (range 33 127))] ; TODO: select proper range
+     (apply str (take length (repeatedly #(rand-nth valid-chars)))))))
+
+(def valid-chars (map char (range 33 127)))

@@ -1,7 +1,7 @@
 (ns clokey.user
   (:require [crypto.password.bcrypt :as password]
-            [clojure.string :as string]
-            [clokey.pass :as pass]))
+            [clojure.string :as string]))
+
 ;; EXAMPLE USERS
 
 (def example-user
@@ -11,18 +11,12 @@
    [{:source "facebook.com"
      :username "alexdag"
      :pw "encrypted-pw"}
-    {}
-    {}]})
-
-(def example-user-encrypted
-  {:name "Max Mustermann"
-   :mpw (pass/create-password "master-pw")
-   :entries
-   [{:source "facebook.com"
-     :username "max"
-     :pw (pass/create-password "fb-pw")}
-    {}
-    {}]})
+    {:source "youtube.com"
+      :username "alexdag"
+      :pw "encrypted-pw"}
+    {:source "myspace.com"
+      :username "alexdag"
+      :pw "encrypted-pw"}]})
 
 ;; CRUD
 
@@ -41,11 +35,13 @@
 (defn update-user []
   (* 1 1))
 
-;; MANAGE
+;; MANAGE ENTRIES
 
 (defn get-entry [user source-name]
   (let [entries (user :entries)]
-    (filter #(re-matches (:source %) (re-pattern source-name) entries))))
+    (filter
+     #(re-matches (re-pattern source-name) (:source %))
+     entries)))
 
 ;; AUTHENTICATION
 
