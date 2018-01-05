@@ -18,7 +18,7 @@
       :username "alexdag"
       :pw "encrypted-pw"}]})
 
-;; CRUD
+;; CRUD - USERS
 
 (defn create-user [username mpw]
   (let [new-user
@@ -41,6 +41,40 @@
 (defn save-user [user]
   (println "In the future, I'll save this user to the database!"))
 
+;; AUTHENTICATION
+
+(defn authenticate []
+  (* 1 1))
+
+(defn authenticated? []
+  (* 1 1))
+
+;; CRUD
+
+(defn create-entry
+  "creates entry if requirements are met, does other stuff otherwise" ;TODO: REDACT!
+  ([source username pw]
+   (if (valid? pw)
+    (do
+      (println "success!")
+      {:source source
+       :username (encrypt username)
+       :password (encrypt pw)})
+    (println "fail!")))
+  ([source username]
+   {:source source
+    :username (encrypt username)
+    :password (encrypt generate-password)}))
+
+(defn read-entry []
+  (* 1 1))
+
+(defn update-entry []
+  (* 1 1))
+
+(defn delete-entry []
+  (* 1 1))
+
 ;; MANAGE ENTRIES
 
 (defn get-entry [user source-name]
@@ -56,39 +90,8 @@
          :entries (conj (:entries user) entry)}]
     (println "User before: \n" user)
     (conj (:entries user) entry)
-    (println "User after: \n" new-user)))
-
-;; AUTHENTICATION
-
-(defn authenticate []
-  (* 1 1))
-
-(defn authenticated? []
-  (* 1 1))
-
-;; FROM PASS!
-
-;; CRUD
-
-(defn create-entry
-  "creates entry"
-  ([source username pw]
-   {:source source
-    :username username
-    :password pw})
-  ([source username]
-   {:source source
-    :username username
-    :password generate-password}))
-
-(defn read-entry []
-  (* 1 1))
-
-(defn update-entry []
-  (* 1 1))
-
-(defn delete-entry []
-  (* 1 1))
+    (println "User after: \n" new-user)
+    new-user))
 
 ;; VALIDATION
 
@@ -100,16 +103,21 @@
    - at least one digit
    - at least one special character: - @ # $ % ^ & + ="
   (let [pattern
-        #"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[-@#$%^&+=_])(?=\S+$).{10,}$"]
-    (boolean (re-matches pattern pw))))
+        #"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[-@#$%^&+=_])(?=\S+$).{10,30}$"]
+    (and
+     (string? pw)
+     (re-matches pattern pw)
+     true))) ; and returns the last value it evaluates if all are true
+
+;;;; QUESTION: is it better to do (and bool bool true) or (boolean (and bool bool))
 
 ;; ENCRYPTION
 
 (defn encrypt [pw]
   pw)
 
-(defn decrypt []
-  (* 1 1))
+(defn decrypt [pw]
+  pw)
 
 ;; GENERATE PASSWORD
 
@@ -120,5 +128,3 @@
    ; for reference: http://www.asciitable.com
    (let [valid-chars (map char (range 33 127))] ; TODO: select proper range
      (apply str (take length (repeatedly #(rand-nth valid-chars)))))))
-
-(def valid-chars (map char (range 33 127)))
