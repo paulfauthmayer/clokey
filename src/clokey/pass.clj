@@ -26,8 +26,16 @@
 
 ;; VALIDATION
 
-(defn valid? []
-  (* 1 1))
+(defn valid? [pw]
+  "Checks whether a password is sufficiently secure. The password must include:
+   - minimum length of 10 characters
+   - at least one lower case letter
+   - at least one upper case letter
+   - at least one digit
+   - at least one special character: - @ # $ % ^ & + ="
+  (let [pattern
+        #"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[-@#$%^&+=_])(?=\S+$).{10,}$"]
+    (boolean (re-matches pattern pw))))
 
 ;; ENCRYPTION
 

@@ -26,8 +26,11 @@
 
 ;; CRUD
 
-(defn create-user []
-  (* 1 1))
+(defn create-user [username mpw]
+  {:name username
+   :mpw mpw
+   :accounts
+   []})
 
 (defn get-user []
   (* 1 1))
@@ -37,6 +40,7 @@
 
 (defn update-user []
   (* 1 1))
+
 
 ;; AUTHENTICATION
 
