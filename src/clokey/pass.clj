@@ -48,5 +48,7 @@
 ;; GENERATE PASSWORD
 
 (defn generate-password
-  []
-  ("HARDCODED-PASSWORD"))
+  ([] (generate-password 10))
+  ([length]
+   (let [valid-chars (map char (range 33 127))]
+     (take length (repeatedly (rand-nth valid-chars))))))

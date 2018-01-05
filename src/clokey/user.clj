@@ -7,7 +7,7 @@
 (def example-user
   {:name "Alex da G"
    :mpw "encrypted-pw"
-   :accounts
+   :entries
    [{:source "facebook.com"
      :username "alexdag"
      :pw "encrypted-pw"}
@@ -17,7 +17,7 @@
 (def example-user-encrypted
   {:name "Max Mustermann"
    :mpw (pass/create-password "master-pw")
-   :accounts
+   :entries
    [{:source "facebook.com"
      :username "max"
      :pw (pass/create-password "fb-pw")}
@@ -41,6 +41,11 @@
 (defn update-user []
   (* 1 1))
 
+;; MANAGE
+
+(defn get-entry [user source-name]
+  (let [entries (user :entries)]
+    (filter #(re-matches (:source %) (re-pattern source-name) entries))))
 
 ;; AUTHENTICATION
 
