@@ -1,6 +1,7 @@
 (ns clokey.user
   (:require [crypto.password.bcrypt :as password]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [clojure.java.io :as io]))
 
 ;; EXAMPLE USERS
 
@@ -75,13 +76,53 @@
 (defn delete-entry []
   (* 1 1))
 
+;; FILESYSTEM
+
+;; //TODO: Define behavior/wording for filename === username
+
+(defn getpath
+  "path to the userdata folder on the filesystem, configuration value"
+  [user]
+  (str "./data/" user ".txt"))
+
+(defn exists?
+  "Checks if a file exists, see above //TODO"
+  [user]
+  (true?
+   (.exists (io/file (getpath user)))))
+
+(defn read-file
+  "Read data from a file and parse it"
+  [user]
+  (if
+    (exists? user)
+    (println (slurp (getpath user)))
+    (println "File does not exist!")))
+
+(defn write-to-file
+  "Write a given input to a file, checks if file exists"
+  [user, input]
+  (if
+    (exists? user)
+    (spit (getpath user) input :append true)
+    (println "File does not exist!")))
+
+;(write-to-file "test" (create-user "alex" "PW123#123#123#123d"))
+;(read-file "test")
+
+
 ;; MANAGE ENTRIES
+
+;; //TODO: Must call read-file to read from "database"
 
 (defn get-entry [user source-name]
   (let [entries (user :entries)]
     (filter
      #(re-matches (re-pattern source-name) (:source %))
      entries)))
+
+
+;; //TODO: Must call write-to-file to persist changes
 
 (defn set-entry [user entry]
   (let [new-user
