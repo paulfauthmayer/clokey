@@ -142,7 +142,3 @@
         (into blocks
               (vector (apply str
                         (take 4 (repeatedly #(rand-nth valid-chars)))))))))))
-
-
-(let [blocks ["ABCD" "EFGH" "IJKL"]]
-  (reduce str "" (str % "-")))
