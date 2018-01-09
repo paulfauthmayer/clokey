@@ -2,6 +2,9 @@
   (:require [crypto.password.bcrypt :as password]
             [clojure.string :as string]))
 
+;; GLOBALS
+(def valid-chars (map char (range 33 127)))
+
 ;; EXAMPLE USERS
 
 (def example-user
@@ -9,13 +12,13 @@
    :mpw "encrypted-pw"
    :entries
    [{:source "facebook.com"
-     :username "alexdag"
+     :username "alexmerker"
      :pw "encrypted-pw"}
     {:source "youtube.com"
-      :username "alexdag"
+      :username "alexmerker"
       :pw "encrypted-pw"}
     {:source "myspace.com"
-      :username "alexdag"
+      :username "alexmerker"
       :pw "encrypted-pw"}]})
 
 ;; CRUD - USERS
@@ -126,5 +129,20 @@
   ([length]
    ; Note: the range refers to the numbers assigned to chars in the ASCII charset
    ; for reference: http://www.asciitable.com
-   (let [valid-chars (map char (range 33 127))] ; TODO: select proper range
-     (apply str (take length (repeatedly #(rand-nth valid-chars)))))))
+   (apply str (take length (repeatedly #(rand-nth valid-chars))))))
+
+(defn generate-fancy-password
+  "Generates a password in the pattern of XXXX-XXXX-XXXX"
+  ([] (generate-fancy-password 3))
+  ([number-of-blocks]
+   (loop [blocks []]
+     (if (>= (count blocks) number-of-blocks)
+       (clojure.string/join "-" blocks)
+       (recur
+        (into blocks
+              (vector (apply str
+                        (take 4 (repeatedly #(rand-nth valid-chars)))))))))))
+
+
+(let [blocks ["ABCD" "EFGH" "IJKL"]]
+  (reduce str "" (str % "-")))
