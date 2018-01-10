@@ -4,7 +4,13 @@
 
 ;; GLOBALS
 (def valid-chars (map char (range 33 127)))
-
+(def special-char-range (concat (range 33 48)
+                                (range 58 65)
+                                (range 91 97)
+                                (range 123 127)))
+(def number-char-range  (range 45 57))
+(def letters-char-range (concat (range 65 91)
+                                (range 97 123)))
 ;; EXAMPLE USERS
 
 (def example-user
@@ -96,6 +102,42 @@
     (println "User after: \n" new-user)
     new-user))
 
+
+;; GENERATE PASSWORD
+
+(def all-chars-range (range 33 127))
+
+(def selected-range  (concat (range 33 45)
+                             (range 46 127)
+                             (range 65 91) ; a-z and A-Z are included twice in order
+                             (range 97 123)))
+
+(def easy-range      (concat (range 48 58)
+                             (range 97 123)
+                             (range 65 91)
+                             (range 33 39)
+                             '(42 43 63 64)))
+
+(defn get-valid-characters [& ranges]
+  (map char (apply concat ranges)))
+
+(defn generate-basic-password
+  ([] (generate-password 10))
+  ([length]
+   (apply str (take length (repeatedly #(rand-nth valid-chars))))))
+
+(defn generate-fancy-password
+  "Generates a password in the pattern of XXX-XXX-XXX-XXX"
+  ([] (generate-fancy-password 4 easy-range))
+  ([number-of-blocks range]
+   (loop [blocks []]
+     (if (>= (count blocks) number-of-blocks)
+       (clojure.string/join "-" blocks)
+       (recur
+        (into blocks
+              (vector (apply str
+                        (take 3 (repeatedly #(rand-nth (get-valid-characters range))))))))))))
+
 ;; VALIDATION
 
 (defn valid? [pw]
@@ -122,23 +164,4 @@
 (defn decrypt [pw]
   pw)
 
-;; GENERATE PASSWORD
-
-(defn generate-password
-  ([] (generate-password 10))
-  ([length]
-   ; Note: the range refers to the numbers assigned to chars in the ASCII charset
-   ; for reference: http://www.asciitable.com
-   (apply str (take length (repeatedly #(rand-nth valid-chars))))))
-
-(defn generate-fancy-password
-  "Generates a password in the pattern of XXXX-XXXX-XXXX"
-  ([] (generate-fancy-password 3))
-  ([number-of-blocks]
-   (loop [blocks []]
-     (if (>= (count blocks) number-of-blocks)
-       (clojure.string/join "-" blocks)
-       (recur
-        (into blocks
-              (vector (apply str
-                        (take 4 (repeatedly #(rand-nth valid-chars)))))))))))
+;;
