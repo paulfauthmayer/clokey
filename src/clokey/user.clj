@@ -118,7 +118,7 @@
          :entries (conj (:entries user) entry)}]
     (println "User before: \n" user)
     (conj (:entries user) entry)
-    (save-user new-user)
+    ;(save-user new-user)
     (println "User after: \n" new-user)
     new-user))
 
