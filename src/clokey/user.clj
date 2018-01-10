@@ -4,7 +4,6 @@
             [clojure.java.io :as io]
             [clojure.data.json :as json]))
 
-
 ;; CRUD - USERS
 
 (defn create-user [username mpw]
@@ -125,6 +124,42 @@
     (println "User after: \n" new-user)
     new-user))
 
+
+;; GENERATE PASSWORD
+
+(def all-chars-range (range 33 127))
+
+(def selected-range  (concat (range 33 45)
+                             (range 46 127)
+                             (range 65 91) ; a-z and A-Z are included twice in order
+                             (range 97 123)))
+
+(def easy-range      (concat (range 48 58)
+                             (range 97 123)
+                             (range 65 91)
+                             (range 33 39)
+                             '(42 43 63 64)))
+
+(defn get-valid-characters [& ranges]
+  (map char (apply concat ranges)))
+
+(defn generate-basic-password
+  ([] (generate-password 10))
+  ([length]
+   (apply str (take length (repeatedly #(rand-nth valid-chars))))))
+
+(defn generate-fancy-password
+  "Generates a password in the pattern of XXX-XXX-XXX-XXX"
+  ([] (generate-fancy-password 4 easy-range))
+  ([number-of-blocks range]
+   (loop [blocks []]
+     (if (>= (count blocks) number-of-blocks)
+       (clojure.string/join "-" blocks)
+       (recur
+        (into blocks
+              (vector (apply str
+                        (take 3 (repeatedly #(rand-nth (get-valid-characters range))))))))))))
+
 ;; VALIDATION
 
 (defn valid? [pw]
@@ -151,12 +186,4 @@
 (defn decrypt [pw]
   pw)
 
-;; GENERATE PASSWORD
-
-(defn generate-password
-  ([] (generate-password 10))
-  ([length]
-   ; Note: the range refers to the numbers assigned to chars in the ASCII charset
-   ; for reference: http://www.asciitable.com
-   (let [valid-chars (map char (range 33 127))] ; TODO: select proper range
-     (apply str (take length (repeatedly #(rand-nth valid-chars)))))))
+;;
