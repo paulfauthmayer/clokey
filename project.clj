@@ -5,7 +5,8 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [crypto-password "0.2.0"]
-                 [proto-repl "0.3.1"]]
+                 [proto-repl "0.3.1"]
+                 [org.clojure/data.json "0.2.6"]]
   :main ^:skip-aot clokey.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

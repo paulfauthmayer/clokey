@@ -1,23 +1,9 @@
 (ns clokey.user
   (:require [crypto.password.bcrypt :as password]
             [clojure.string :as string]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.data.json :as json]))
 
-;; EXAMPLE USERS
-
-(def example-user
-  {:name "Alex da G"
-   :mpw "encrypted-pw"
-   :entries
-   [{:source "facebook.com"
-     :username "alexdag"
-     :pw "encrypted-pw"}
-    {:source "youtube.com"
-      :username "alexdag"
-      :pw "encrypted-pw"}
-    {:source "myspace.com"
-      :username "alexdag"
-      :pw "encrypted-pw"}]})
 
 ;; CRUD - USERS
 
@@ -30,8 +16,10 @@
     (save-user new-user)
     new-user))
 
-(defn get-user []
-  (* 1 1))
+(defn get-user
+  "Reads a user from FS by username and provides data"
+  [user]
+  (read-file user))
 
 (defn delete-user []
   (* 1 1))
@@ -39,7 +27,9 @@
 (defn update-user []
   (* 1 1))
 
-(defn save-user [user]
+(defn save-user
+  "Writes a user 'object' to the FS"
+  [user]
   (write-to-file (user :name) user))
 
 ;; AUTHENTICATION
@@ -101,37 +91,28 @@
   [user]
   (if
     (exists? user)
-    (println (slurp (get-path user)))
+    (json/read-str (slurp (get-path user)))
     (println "File does not exist!")))
 
 (defn write-to-file
   "Write a given input to a file, checks if file exists"
   [user, input]
   (if (exists? user)
-    (spit (get-path user) input)
+    (spit (get-path user) (json/write-str input))
     (do
      (println (str "File does not exist, creating file " user ".txt"))
      (create-user-file user)
-     (spit (get-path user) input))))
-
-;(write-to-file "test" (create-user "alex" "PW123#123#123#123d"))
-;(read-file "test")
+     (spit (get-path user) (json/write-str input)))))
 
 ; </editor-fold>
 
-
 ;; MANAGE ENTRIES
-
-;; //TODO: Must call read-file to read from "database"
 
 (defn get-entry [user source-name]
   (let [entries (user :entries)]
     (filter
      #(re-matches (re-pattern source-name) (:source %))
      entries)))
-
-
-;; //TODO: Must call write-to-file to persist changes
 
 (defn set-entry [user entry]
   (let [new-user
