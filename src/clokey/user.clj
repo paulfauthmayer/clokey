@@ -1,31 +1,8 @@
 (ns clokey.user
   (:require [crypto.password.bcrypt :as password]
-            [clojure.string :as string]))
-
-;; GLOBALS
-(def valid-chars (map char (range 33 127)))
-(def special-char-range (concat (range 33 48)
-                                (range 58 65)
-                                (range 91 97)
-                                (range 123 127)))
-(def number-char-range  (range 45 57))
-(def letters-char-range (concat (range 65 91)
-                                (range 97 123)))
-;; EXAMPLE USERS
-
-(def example-user
-  {:name "Alex da G"
-   :mpw "encrypted-pw"
-   :entries
-   [{:source "facebook.com"
-     :username "alexmerker"
-     :pw "encrypted-pw"}
-    {:source "youtube.com"
-      :username "alexmerker"
-      :pw "encrypted-pw"}
-    {:source "myspace.com"
-      :username "alexmerker"
-      :pw "encrypted-pw"}]})
+            [clojure.string :as string]
+            [clojure.java.io :as io]
+            [clojure.data.json :as json]))
 
 ;; CRUD - USERS
 
@@ -38,8 +15,10 @@
     (save-user new-user)
     new-user))
 
-(defn get-user []
-  (* 1 1))
+(defn get-user
+  "Reads a user from FS by username and provides data"
+  [user]
+  (read-file user))
 
 (defn delete-user []
   (* 1 1))
@@ -47,8 +26,10 @@
 (defn update-user []
   (* 1 1))
 
-(defn save-user [user]
-  (println "In the future, I'll save this user to the database!"))
+(defn save-user
+  "Writes a user 'object' to the FS"
+  [user]
+  (write-to-file (user :name) user))
 
 ;; AUTHENTICATION
 
@@ -84,6 +65,46 @@
 (defn delete-entry []
   (* 1 1))
 
+; <editor-fold> --------FILESYSTEM METHODS -----------
+
+;; //TODO: Define behavior/wording for filename & username & user
+
+(defn get-path
+  "path to the userdata folder on the filesystem, configuration value"
+  [user]
+  (str "./data/" user ".txt"))
+
+(defn exists?
+  "Checks if a file exists, see above //TODO"
+  [user]
+  (true?
+   (.exists (io/file (get-path user)))))
+
+(defn create-user-file
+  "Creates a file with a given username, e.g. paul.txt"
+  [name]
+  (with-open [wrtr (io/writer (get-path name))]))
+
+(defn read-file
+  "Read data from a file and return as string"
+  [user]
+  (if
+    (exists? user)
+    (json/read-str (slurp (get-path user)))
+    (println "File does not exist!")))
+
+(defn write-to-file
+  "Write a given input to a file, checks if file exists"
+  [user, input]
+  (if (exists? user)
+    (spit (get-path user) (json/write-str input))
+    (do
+     (println (str "File does not exist, creating file " user ".txt"))
+     (create-user-file user)
+     (spit (get-path user) (json/write-str input)))))
+
+; </editor-fold>
+
 ;; MANAGE ENTRIES
 
 (defn get-entry [user source-name]
@@ -99,6 +120,7 @@
          :entries (conj (:entries user) entry)}]
     (println "User before: \n" user)
     (conj (:entries user) entry)
+    (save-user new-user)
     (println "User after: \n" new-user)
     new-user))
 
