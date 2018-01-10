@@ -67,15 +67,13 @@
 
 ; <editor-fold> --------FILESYSTEM METHODS -----------
 
-;; //TODO: Define behavior/wording for filename & username & user
-
 (defn get-path
   "path to the userdata folder on the filesystem, configuration value"
   [user]
   (str "./data/" user ".txt"))
 
 (defn exists?
-  "Checks if a file exists, see above //TODO"
+  "Checks if a file already exists"
   [user]
   (true?
    (.exists (io/file (get-path user)))))
@@ -86,7 +84,7 @@
   (with-open [wrtr (io/writer (get-path name))]))
 
 (defn read-file
-  "Read data from a file and return as string"
+  "Read data from a file and return as string, parses from json"
   [user]
   (if
     (exists? user)
@@ -94,7 +92,7 @@
     (println "File does not exist!")))
 
 (defn write-to-file
-  "Write a given input to a file, checks if file exists"
+  "Write a given input to a file, will create a file if none exists, parses to json"
   [user, input]
   (if (exists? user)
     (spit (get-path user) (json/write-str input))
