@@ -40,7 +40,7 @@
   (* 1 1))
 
 (defn save-user [user]
-  (println "In the future, I'll save this user to the database!"))
+  (write-to-file (user :name) user))
 
 ;; AUTHENTICATION
 
@@ -76,11 +76,11 @@
 (defn delete-entry []
   (* 1 1))
 
-;; FILESYSTEM
+; <editor-fold> --------FILESYSTEM METHODS -----------
 
-;; //TODO: Define behavior/wording for filename === username
+;; //TODO: Define behavior/wording for filename & username & user
 
-(defn getpath
+(defn get-path
   "path to the userdata folder on the filesystem, configuration value"
   [user]
   (str "./data/" user ".txt"))
@@ -89,26 +89,35 @@
   "Checks if a file exists, see above //TODO"
   [user]
   (true?
-   (.exists (io/file (getpath user)))))
+   (.exists (io/file (get-path user)))))
+
+(defn create-user-file
+  "Creates a file with a given username, e.g. paul.txt"
+  [name]
+  (with-open [wrtr (io/writer (get-path name))]))
 
 (defn read-file
-  "Read data from a file and parse it"
+  "Read data from a file and return as string"
   [user]
   (if
     (exists? user)
-    (println (slurp (getpath user)))
+    (println (slurp (get-path user)))
     (println "File does not exist!")))
 
 (defn write-to-file
   "Write a given input to a file, checks if file exists"
   [user, input]
-  (if
-    (exists? user)
-    (spit (getpath user) input :append true)
-    (println "File does not exist!")))
+  (if (exists? user)
+    (spit (get-path user) input)
+    (do
+     (println (str "File does not exist, creating file " user ".txt"))
+     (create-user-file user)
+     (spit (get-path user) input))))
 
 ;(write-to-file "test" (create-user "alex" "PW123#123#123#123d"))
 ;(read-file "test")
+
+; </editor-fold>
 
 
 ;; MANAGE ENTRIES
@@ -131,6 +140,7 @@
          :entries (conj (:entries user) entry)}]
     (println "User before: \n" user)
     (conj (:entries user) entry)
+    (save-user new-user)
     (println "User after: \n" new-user)
     new-user))
 
