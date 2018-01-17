@@ -1,102 +1,10 @@
 (ns clokey.user
-  (:require [crypto.password.bcrypt :as password]
-            [clojure.string :as string]
-            [clojure.java.io :as io]
-            [clojure.data.json :as json]))
+ (:require [crypto.password.bcrypt :as password]
+           [clojure.string :as string]
+           [clojure.java.io :as io]
+           [clojure.data.json :as json]))
 
 
-; <editor-fold> --------USER CRUD -----------
-
-;; CRUD - USERS
-
-(defn create-user [username mpw]
-  (let [new-user
-        {:name username
-         :mpw mpw
-         :entries
-         []}]
-    (save-user new-user)
-    new-user))
-
-(defn get-user
-  "Reads a user from FS by username and provides data"
-  [user]
-  (read-file user))
-
-(defn delete-user []
-  (* 1 1))
-
-(defn update-user []
-  (* 1 1))
-
-(defn save-user
-  "Writes a user 'object' to the FS"
-  [user]
-  (write-to-file (user :name) user))
-
-; </editor-fold>
-
-;; AUTHENTICATION
-
-(defn authenticate []
-  (* 1 1))
-
-(defn authenticated? []
-  (* 1 1))
-
-; <editor-fold> --------ENTRY CRUD -----------
-
-; //TODO: Verfiy that apply generate-fancy-password '() is the right way....
-(defn create-entry
-  "creates entry if requirements are met, does other stuff otherwise" ;TODO: REDACT!
-  ([source username pw]
-   (if (valid? pw)
-    (do
-      (println "success!")
-      {:source source
-       :username (encrypt username)
-       :password (encrypt pw)})
-    (println "fail!")))
-  ([source username]
-   {:source source
-    :username (encrypt username)
-    :password (apply generate-fancy-password '())}))
-
-
-(defn read-entry []
-  (* 1 1))
-
-(defn update-entry []
-  (* 1 1))
-
-(defn delete-entry []
-  (* 1 1))
-
-
-;; MANAGE ENTRIES
-
-(defn get-entry
-  ""
-  [user source-name]
-  (let [entries (user :entries)]
-    (filter
-     #(re-matches (re-pattern source-name) (:source %))
-     entries)))
-
-(defn set-entry
-  ""
-  [user entry]
-  (let [new-user
-        {:name (:name user)
-         :mpw (:mpw user)
-         :entries (conj (:entries user) entry)}]
-    (println "User before: \n" user)
-    (conj (:entries user) entry)
-    (save-user new-user)
-    (println "User after: \n" new-user)
-    new-user))
-
-; </editor-fold>
 
 ; <editor-fold> --------FILESYSTEM READ/WRITE -----------
 
@@ -136,12 +44,15 @@
 
 ; </editor-fold>
 
-;TEST
+; <editor-fold> ---------ENCRYPTION---------------------
 
-(def x (create-user "A" "ASDBJASDVAsds123#"))
+(defn encrypt [pw]
+  pw)
 
-(def y (set-entry x (create-entry "A.com" "AAA")))
+(defn decrypt [pw]
+  pw)
 
+; </editor-fold>
 
 ; <editor-fold> --------PASSWORD GENERATION -----------
 
@@ -161,14 +72,9 @@
 (defn get-valid-characters [& ranges]
   (map char (apply concat ranges)))
 
-(defn generate-basic-password
-  ([] (generate-basic-password 10))
-  ([length]
-   (apply str (take length (repeatedly #(rand-nth valid-chars))))))
-
-(defn generate-fancy-password
+(defn generate-password
   "Generates a password in the pattern of XXX-XXX-XXX-XXX"
-  ([] (generate-fancy-password 4 easy-range))
+  ([] (generate-password 4 easy-range))
   ([number-of-blocks range]
    (loop [blocks []]
      (if (>= (count blocks) number-of-blocks)
@@ -177,10 +83,6 @@
         (into blocks
               (vector (apply str
                         (take 3 (repeatedly #(rand-nth (get-valid-characters range))))))))))))
-
-;</editor-fold>
-
-;; VALIDATION
 
 (defn valid? [pw]
   "Checks whether a password is sufficiently secure. The password must include:
@@ -198,12 +100,138 @@
 
 ;;;; QUESTION: is it better to do (and bool bool true) or (boolean (and bool bool))
 
-;; ENCRYPTION
+;</editor-fold>
 
-(defn encrypt [pw]
-  pw)
 
-(defn decrypt [pw]
-  pw)
+
+; <editor-fold> --------USER CRUD -----------
+
+;; CRUD - USERS
+
+(defn save-user
+  "Writes a user 'object' to the FS"
+  [user]
+  (write-to-file (user :name) user))
+
+(defn create-user [username mpw]
+  (let [new-user
+        {:name username
+         :mpw mpw
+         :entries
+         []}]
+    (save-user new-user)
+    new-user))
+
+(defn get-user
+  "Reads a user from FS by username and provides data"
+  [user]
+  (read-file user))
+
+(defn delete-user []
+  (* 1 1))
+
+(defn update-user []
+  (* 1 1))
+
+
+
+; </editor-fold>
+
+;; AUTHENTICATION
+
+(defn authenticate []
+  (* 1 1))
+
+(defn authenticated? []
+  (* 1 1))
+
+; <editor-fold> --------ENTRY CRUD -----------
+
+; //TODO: Verfiy that apply generate-password '() is the right way....
+(defn create-entry
+  "creates entry if requirements are met, does other stuff otherwise" ;TODO: REDACT!
+  ([source username pw]
+   (if (valid? pw)
+    (do
+      (println "success!")
+      {:source source
+       :username (encrypt username)
+       :password (encrypt pw)})
+    (println "fail!")))
+  ([source username]
+   {:source source
+    :username (encrypt username)
+    :password (apply generate-password '())}))
+
+
+(defn read-entry []
+  (* 1 1))
+
+(defn update-entry []
+  (* 1 1))
+
+(defn delete-entry [user source-name]
+  (let [new-user {
+                  :name (user :name)
+                  :mpw (user :mpw)
+                  :entries (remove
+                            (fn [entry]
+                              (= (entry :source) source-name))
+                            (user :entries))}]
+    (save-user new-user)))
+
+
+
+;; MANAGE ENTRIES
+
+(defn get-entry
+  ""
+  [user source-name]
+  (let [entries (user :entries)]
+    (filter
+     #(re-matches (re-pattern source-name) (:source %))
+     entries)))
+
+(defn set-entry
+  ""
+  [user entry]
+  (let [new-user
+        {:name (:name user)
+         :mpw (:mpw user)
+         :entries (conj (:entries user) entry)}]
+    (println "User before: \n" user)
+    (conj (:entries user) entry)
+    (save-user new-user)
+    (println "User after: \n" new-user)
+    new-user))
+
+; </editor-fold>
+
+
+
 
 ;;
+
+;TEST
+
+(def x (create-user "A" "ASDBJASDVAsds123#"))
+
+(def y (set-entry x (create-entry "A.com" "AAA")))
+
+
+
+;; TEST User
+
+(def test-user {
+                 :name "gunther"
+                 :mpw "password123"
+                 :entries [
+                           {:source "facebook.com"
+                            :username "gunterh69"
+                            :password "password123"}
+                           {:source "youtube.com"
+                            :username "gunterh69"
+                            :password "password123"}
+                           {:source "banana-republic.com"
+                            :username "gunterh69"
+                            :password "password123"}]})
