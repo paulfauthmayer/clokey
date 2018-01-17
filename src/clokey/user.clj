@@ -4,6 +4,9 @@
             [clojure.java.io :as io]
             [clojure.data.json :as json]))
 
+
+; <editor-fold> --------USER CRUD -----------
+
 ;; CRUD - USERS
 
 (defn create-user [username mpw]
@@ -31,6 +34,8 @@
   [user]
   (write-to-file (user :name) user))
 
+; </editor-fold>
+
 ;; AUTHENTICATION
 
 (defn authenticate []
@@ -39,8 +44,9 @@
 (defn authenticated? []
   (* 1 1))
 
-;; CRUD
+; <editor-fold> --------ENTRY CRUD -----------
 
+; //TODO: Verfiy that apply generate-fancy-password '() is the right way....
 (defn create-entry
   "creates entry if requirements are met, does other stuff otherwise" ;TODO: REDACT!
   ([source username pw]
@@ -54,7 +60,8 @@
   ([source username]
    {:source source
     :username (encrypt username)
-    :password (encrypt generate-password)}))
+    :password (apply generate-fancy-password '())}))
+
 
 (defn read-entry []
   (* 1 1))
@@ -65,7 +72,33 @@
 (defn delete-entry []
   (* 1 1))
 
-; <editor-fold> --------FILESYSTEM METHODS -----------
+
+;; MANAGE ENTRIES
+
+(defn get-entry
+  ""
+  [user source-name]
+  (let [entries (user :entries)]
+    (filter
+     #(re-matches (re-pattern source-name) (:source %))
+     entries)))
+
+(defn set-entry
+  ""
+  [user entry]
+  (let [new-user
+        {:name (:name user)
+         :mpw (:mpw user)
+         :entries (conj (:entries user) entry)}]
+    (println "User before: \n" user)
+    (conj (:entries user) entry)
+    (save-user new-user)
+    (println "User after: \n" new-user)
+    new-user))
+
+; </editor-fold>
+
+; <editor-fold> --------FILESYSTEM READ/WRITE -----------
 
 (defn get-path
   "path to the userdata folder on the filesystem, configuration value"
@@ -103,27 +136,14 @@
 
 ; </editor-fold>
 
-;; MANAGE ENTRIES
+;TEST
 
-(defn get-entry [user source-name]
-  (let [entries (user :entries)]
-    (filter
-     #(re-matches (re-pattern source-name) (:source %))
-     entries)))
+(def x (create-user "A" "ASDBJASDVAsds123#"))
 
-(defn set-entry [user entry]
-  (let [new-user
-        {:name (:name user)
-         :mpw (:mpw user)
-         :entries (conj (:entries user) entry)}]
-    (println "User before: \n" user)
-    (conj (:entries user) entry)
-    ;(save-user new-user)
-    (println "User after: \n" new-user)
-    new-user))
+(def y (set-entry x (create-entry "A.com" "AAA")))
 
 
-;; GENERATE PASSWORD
+; <editor-fold> --------PASSWORD GENERATION -----------
 
 (def all-chars-range (range 33 127))
 
@@ -142,7 +162,7 @@
   (map char (apply concat ranges)))
 
 (defn generate-basic-password
-  ([] (generate-password 10))
+  ([] (generate-basic-password 10))
   ([length]
    (apply str (take length (repeatedly #(rand-nth valid-chars))))))
 
@@ -157,6 +177,8 @@
         (into blocks
               (vector (apply str
                         (take 3 (repeatedly #(rand-nth (get-valid-characters range))))))))))))
+
+;</editor-fold>
 
 ;; VALIDATION
 
