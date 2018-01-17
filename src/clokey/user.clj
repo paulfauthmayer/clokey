@@ -2,7 +2,7 @@
  (:require [crypto.password.bcrypt :as password]
            [clojure.string :as string]
            [clojure.java.io :as io]
-           [clojure.data.json :as json]))
+           [cheshire.core :refer :all]))
 
 
 
@@ -29,18 +29,18 @@
   [user]
   (if
     (exists? user)
-    (json/read-str (slurp (get-path user)))
+    (parse-string (slurp (get-path user)) true)
     (println "File does not exist!")))
 
 (defn write-to-file
   "Write a given input to a file, will create a file if none exists, parses to json"
   [user, input]
   (if (exists? user)
-    (spit (get-path user) (json/write-str input))
+    (spit (get-path user) (generate-string input))
     (do
      (println (str "File does not exist, creating file " user ".txt"))
      (create-user-file user)
-     (spit (get-path user) (json/write-str input)))))
+     (spit (get-path user) (generate-string input)))))
 
 ; </editor-fold>
 
