@@ -102,8 +102,6 @@
 
 ;</editor-fold>
 
-
-
 ; <editor-fold> --------USER CRUD -----------
 
 ;; CRUD - USERS
@@ -125,7 +123,7 @@
 (defn get-user
   "Reads a user from FS by username and provides data"
   [user]
-  (read-file user))
+  (read-file (user :name)))
 
 (defn delete-user []
   (* 1 1))
@@ -137,6 +135,8 @@
 
 ; </editor-fold>
 
+; <editor-fold> -------- AUTHENTICATION -----------
+
 ;; AUTHENTICATION
 
 (defn authenticate []
@@ -144,6 +144,8 @@
 
 (defn authenticated? []
   (* 1 1))
+
+; </editor-fold>
 
 ; <editor-fold> --------ENTRY CRUD -----------
 
@@ -206,8 +208,6 @@
     new-user))
 
 ; </editor-fold>
-
-
 
 
 ;;
