@@ -69,20 +69,22 @@
                              (range 33 39)
                              '(42 43 63 64)))
 
-(defn get-valid-characters [& ranges]
+(defn get-character-sequence [& ranges]
   (map char (apply concat ranges)))
 
 (defn generate-password
   "Generates a password in the pattern of XXX-XXX-XXX-XXX"
   ([] (generate-password 4 easy-range))
   ([number-of-blocks range]
-   (loop [blocks []]
+   (loop [blocks []
+          number-of-blocks (read-string number-of-blocks)]
      (if (>= (count blocks) number-of-blocks)
        (clojure.string/join "-" blocks)
        (recur
         (into blocks
               (vector (apply str
-                        (take 3 (repeatedly #(rand-nth (get-valid-characters range))))))))))))
+                        (take 3 (repeatedly #(rand-nth (get-character-sequence range)))))))
+        number-of-blocks)))))
 
 (defn valid? [pw]
   "Checks whether a password is sufficiently secure. The password must include:
@@ -97,8 +99,6 @@
      (string? pw)
      (re-matches pattern pw)
      true))) ; and returns the last value it evaluates if all are true
-
-;;;; QUESTION: is it better to do (and bool bool true) or (boolean (and bool bool))
 
 ;</editor-fold>
 
@@ -213,11 +213,6 @@
 ;;
 
 ;TEST
-
-(def x (create-user "A" "ASDBJASDVAsds123#"))
-
-(def y (set-entry x (create-entry "A.com" "AAA")))
-
 
 
 ;; TEST User
