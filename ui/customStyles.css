@@ -1,0 +1,23 @@
+#wrapper {
+  text-align: center;
+  width:500px;
+  margin:0 auto;
+}
+
+#bluebox {
+  width: 250px;
+  background-color:blue;
+  height: 250px;
+  color:white;
+  margin: 25px auto;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.side-buttoncolor {
+  background-color:#e9ecef;
+}
+
+.side-button-width {
+
+}
