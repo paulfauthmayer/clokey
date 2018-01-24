@@ -14,10 +14,11 @@
   [user]
   (utils/write-to-file (user :name) user))
 
-(defn create-user [username mpw]
+(defn create-user [username email mpw]
   (let [new-user
         {:name username
          :mpw mpw
+         :email email
          :entries
          []}]
     (save-user new-user)
@@ -86,6 +87,7 @@
 (defn set-entry
   ""
   [user entry]
+  ; TODO: use assoc instead!
   (let [new-user
         {:name (:name user)
          :mpw (:mpw user)
