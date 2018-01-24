@@ -87,6 +87,7 @@
 (defn set-entry
   ""
   [user entry]
+  ; TODO: use assoc instead!
   (let [new-user
         {:name (:name user)
          :mpw (:mpw user)

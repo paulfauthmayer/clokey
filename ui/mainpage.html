@@ -56,11 +56,9 @@
         </div>
       </div>
 
-      <button type="submit" name="Create" value="Create">Login</button>
+      <button type="submit" name="Create" value="Create">Create User</button>
 
     </form>
-
-    <p href="" onclick="showAndHide('login-container','create-user-container')">Already have an account? Login here!</p>
 
     <form class="login-container" action="http://localhost:3000/login" method="post">
       <h1>LOGIN</h1>
@@ -94,6 +92,38 @@
       <div id="bluebox">
         Will be generated content at some point
       </div>
+
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="www.example.com">
+        <div class="input-group-append side-buttoncolor side-button-width">
+          <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Pick URL</button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+            <div role="separator" class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Separated link</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+        </div>
+      </div>
+
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Password" aria-label="Recipient's username" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+        </div>
+      </div>
+    </form>
+
+    <form class="edit-container">
+      <h1>EDIT </h1>
 
       <div class="input-group mb-3">
         <input type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="www.example.com">
