@@ -14,10 +14,11 @@
   [user]
   (utils/write-to-file (user :name) user))
 
-(defn create-user [username mpw]
+(defn create-user [username email mpw]
   (let [new-user
         {:name username
          :mpw mpw
+         :email email
          :entries
          []}]
     (save-user new-user)

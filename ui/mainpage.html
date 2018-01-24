@@ -1,19 +1,96 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="./customStyles.css" />
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Clokey Password Manager</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="./customStyles.css" />
 
-  </head>
-  <body>
-    <div id="wrapper">
+  <title>Clokey Password Manager</title>
+
+</head>
+
+<body>
+
+  <script type="text/javascript">
+    function showAndHide(hide, show) {
+
+      var toHide = document.getElementsByClassName(hide)[0];
+      var toShow = document.getElementsByClassName(show)[0];
+
+      console.log(toHide)
+      console.log(toShow)
+
+      toHide.style.display = "none";
+      toShow.style.display = "inline-block"
+
+    }
+  </script>
+
+  <div id="wrapper">
+
+    <form class="create-user-container" action="http://localhost:3000/create-user" method="post">
+      <h1>CREATE USER</h1>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" name="username" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+        </div>
+      </div>
+
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" name="email" placeholder="Email" aria-label="Recipient's email" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+        </div>
+      </div>
+
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" name="mpw" placeholder="Password" aria-label="Recipient's password" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+        </div>
+      </div>
+
+      <button type="submit" name="Create" value="Create">Login</button>
+
+    </form>
+
+    <p href="" onclick="showAndHide('login-container','create-user-container')">Already have an account? Login here!</p>
+
+    <form class="login-container" action="http://localhost:3000/login" method="post">
+      <h1>LOGIN</h1>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" name="username" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+        </div>
+      </div>
+
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" name="mpw" placeholder="Password" aria-label="Recipient's username" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+        </div>
+      </div>
+
+      <button type="submit" name="Login" value="Login">Login</button>
+
+    </form>
+
+    <p href="" onclick="showAndHide('create-user-container','login-container');
+                        ">Don't have an account yet? Sign up here!</p>
+    <p href="" onclick="showAndHide('login-container','create-user-container')">Already have an account? Login here!</p>
+
+
+    <hr style="width:100%;color:black;height:5px;size:5px;">
+
+    <form class="main-container">
+      <h1>MAIN</h1>
       <div id="bluebox">
         Will be generated content at some point
       </div>
@@ -45,15 +122,16 @@
           <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
         </div>
       </div>
+    </form>
 
+  </div>
 
-    </div>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
 
-  </body>
 </html>

@@ -21,16 +21,19 @@
     (GET "/user/:id" [id]
       (str "<h1>HI USER NR " id "</h1>"))
     (GET "/encrypt/:pw" [pw]
+      (.println System/out "test")
       (utils/encrypt pw))
     (POST "/" request
       (str request))
     (GET "/foobar" [x y & z]
       (str x ", " y ", " z))
-    (GET "/create-user" [username mpw]
-      (let [new-user (user/create-user username mpw)]
+    (POST "/create-user" [username email mpw]
+      (println username " " mpw)
+      (let [new-user (user/create-user username email mpw)]
         (mc/insert-and-return db "users" new-user)))
+
     (route/not-found "Not Found"))
 
 
   (def app
-    (wrap-defaults app-routes site-defaults)))
+    (wrap-defaults app-routes (assoc-in site-defaults [:security :anti-forgery] false))))
