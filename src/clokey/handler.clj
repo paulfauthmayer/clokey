@@ -7,13 +7,10 @@
             [clokey.utils :as utils]
             [monger.core :as mg]
             [monger.collection :as mc])
-  (:import [com.mongodb MongoOptions ServerAddress]
-           org.bson.types.ObjectId))
+  (:import  [com.mongodb MongoOptions ServerAddress]
+            org.bson.types.ObjectId)
 
-;; initialize mongodb
 
-(let [conn (mg/connect)
-      db   (mg/get-db conn "clokey-db")]
 
 ;; define routes
   (defroutes app-routes
