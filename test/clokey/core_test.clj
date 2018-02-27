@@ -1,6 +1,6 @@
 (ns clokey.core-test
   (:require [clojure.test :refer :all]
-            [clokey.core :refer :all]))
+            [clokey.user :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."
