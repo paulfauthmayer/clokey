@@ -23,7 +23,7 @@
   (defn save-user
     "Writes a user 'object' to the Database"
     [user]
-    (mc/insert-and-return db "users" user))
+    (mc/save-and-return db "users" user))
 
   (defn create-user [username email mpw]
     (let [new-user
@@ -57,11 +57,10 @@
   (defn combine-userdata
     "Helper function ..."
     [old-data new-data]
-    (let [new-user {
-                    :name (or (:name new-data) (:name old-data))
-                    :mpw (or (:mpw new-data) (:mpw old-data))
-                    :email (or (:email new-data) (:email old-data))
-                    :entries (or (:entries old-data) [])}]))
+    {:name (or (:name new-data) (:name old-data))
+     :mpw (or (:mpw new-data) (:mpw old-data))
+     :email (or (:email new-data) (:email old-data))
+     :entries (or (:entries old-data) [])})
 
   ; </editor-fold>
 
@@ -90,42 +89,45 @@
   (defn update-entry []
     (* 1 1))
 
-  (defn delete-entry [user source-name]
-    (let [new-user {
-                    :name (user :name)
-                    :mpw (user :mpw)
-                    :email (user :email)
-                    :entries (remove
-                              (fn [entry]
-                                (= (entry :source) source-name))
-                              (user :entries))}]
-      (save-user new-user)))
-
-
+  (defn delete-entry [username source-name]
+    (let [user (get-user username)]
+      (let [entries (user :entries)]
+        (mc/update-by-id
+                  db
+                  "users"
+                  (:_id user)
+                  {:name (:name user)
+                   :mpw (:mpw user)
+                   :email (:email user)
+                   :entries
+                    (filter
+                      #(not (re-matches (re-pattern source-name) (:source %)))
+                      entries)}))))
 
   ;; MANAGE ENTRIES
 
   (defn get-entry
     ""
-    [user source-name]
-    (let [entries (user :entries)]
-      (filter
-       #(re-matches (re-pattern source-name) (:source %))
-       entries)))
+    [username source-name]
+    (let [user (get-user username)]
+      (let [entries (user :entries)]
+       (filter
+        #(re-matches (re-pattern source-name) (:source %))
+        entries))))
 
   (defn set-entry
     ""
-    [user entry]
-    ; TODO: use assoc instead!
-    (let [new-user
-          {:name (:name user)
-           :mpw (:mpw user)
-           :entries (conj (:entries user) entry)}]
-      (println "User before: \n" user)
-      (conj (:entries user) entry)
-      (save-user new-user)
-      (println "User after: \n" new-user)
-      new-user))
+    [username entry]
+    (let [user (get-user username)]
+      (mc/update-by-id
+                       db
+                       "users"
+                       (:_id user)
+                       {:name (:name user)
+                        :mpw (:mpw user)
+                        :email (:email user)
+                        :entries (conj (:entries user) entry)})))
+
 
   ; </editor-fold>
 
