@@ -45,6 +45,14 @@
     [username]
     (mc/remove-by-id db "users" (:_id (get-user username))))
 
+  (defn combine-userdata
+    "Helper function ..."
+    [old-data new-data]
+    {:name (or (:name new-data) (:name old-data))
+     :mpw (or (:mpw new-data) (:mpw old-data))
+     :email (or (:email new-data) (:email old-data))
+     :entries (or (:entries old-data) [])})
+
   (defn update-user
     "Update userdata by a given input username"
     [username userdata]
@@ -54,13 +62,7 @@
                         (:_id user)
                         (combine-userdata user userdata))))
 
-  (defn combine-userdata
-    "Helper function ..."
-    [old-data new-data]
-    {:name (or (:name new-data) (:name old-data))
-     :mpw (or (:mpw new-data) (:mpw old-data))
-     :email (or (:email new-data) (:email old-data))
-     :entries (or (:entries old-data) [])})
+
 
   ; </editor-fold>
 
@@ -72,22 +74,13 @@
     ([source username pw]
      (if (password/valid? pw)
       (do
-        (println "success!")
         {:source source
          :username (utils/encrypt username)
-         :password (utils/encrypt pw)})
-      (println "fail!")))
+         :password (utils/encrypt pw)})))
     ([source username]
      {:source source
       :username (utils/encrypt username)
       :password (utils/encrypt (apply password/generate-password '()))}))
-
-
-  (defn read-entry []
-    (* 1 1))
-
-  (defn update-entry []
-    (* 1 1))
 
   (defn delete-entry [username source-name]
     (let [user (get-user username)]
@@ -127,6 +120,27 @@
                         :mpw (:mpw user)
                         :email (:email user)
                         :entries (conj (:entries user) entry)})))
+
+
+  (defn combine-entrydata
+    "Helper function ..."
+    [old-data new-data]
+    {:source (or (:source new-data) (:source old-data))
+     :username (or (:username new-data) (:username old-data))
+     :password (or (:password new-data) (:password old-data))})
+
+  ; TODO : Does not work! Repair plis
+  (defn update-entry
+    "Updates a given entry"
+    [username source-name new-data]
+    (let [user (get-user username)]
+      (let [entry (get-entry username source-name)]
+        (delete-entry username source-name)
+        (if (nil? entry) (mc/update-by-id
+                               db
+                               "users"
+                               (:_id user)
+                               (assoc user :entries (conj (:entries user) (combine-entrydata entry new-data))))))))
 
 
   ; </editor-fold>
