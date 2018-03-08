@@ -118,11 +118,11 @@
     (let [user (get-user username)
           entry-split (group-by
                         #(re-matches (re-pattern source-name) (:source %))
-                        (:entries user))
-          old-data (first (get entry-split source-name))
-          entry-rest (get entry-split nil)]
-         (->> (combine-entrydata old-data new-data)
-              (conj entry-rest ,,,)
+                        (:entries user))]
+         (->> (combine-entrydata
+               (get entry-split source-name)
+               new-data)
+              (into (get entry-split nil) ,,,)
               (assoc user :entries ,,,)
               (mc/update-by-id
                db
