@@ -68,36 +68,32 @@
 
   ; <editor-fold> --------ENTRY CRUD -----------
 
-  ; //TODO: Verfiy that apply generate-password '() is the right way....
   (defn create-entry
     "creates entry if requirements are met, does other stuff otherwise" ;TODO: REDACT!
     ([source username pw]
      (if (password/valid? pw)
       (do
         {:source source
-         :username (utils/encrypt username)
-         :password (utils/encrypt pw)})))
+         :username username
+         :password  pw})))
     ([source username]
      {:source source
-      :username (utils/encrypt username)
-      :password (utils/encrypt (apply password/generate-password '()))}))
+      :username username
+      :password (apply password/generate-password '())}))
 
-  (defn delete-entry [username source-name]
+  (defn set-entry
+    ""
+    [username entry]
     (let [user (get-user username)]
-      (let [entries (user :entries)]
-        (mc/update-by-id
-                  db
-                  "users"
-                  (:_id user)
-                  {:name (:name user)
-                   :mpw (:mpw user)
-                   :email (:email user)
-                   :entries
-                    (filter
-                      #(not (re-matches (re-pattern source-name) (:source %)))
-                      entries)}))))
-
-  ;; MANAGE ENTRIES
+      (println user)
+      (mc/update-by-id
+                       db
+                       "users"
+                       (:_id user)
+                       {:name (:name user)
+                        :mpw (:mpw user)
+                        :email (:email user)
+                        :entries (conj (:entries user) entry)})))
 
   (defn get-entry
     ""
@@ -108,40 +104,44 @@
         #(re-matches (re-pattern source-name) (:source %))
         entries))))
 
-  (defn set-entry
-    ""
-    [username entry]
-    (let [user (get-user username)]
-      (mc/update-by-id
-                       db
-                       "users"
-                       (:_id user)
-                       {:name (:name user)
-                        :mpw (:mpw user)
-                        :email (:email user)
-                        :entries (conj (:entries user) entry)})))
-
-
   (defn combine-entrydata
+    ;TODO: recursively
     "Helper function ..."
     [old-data new-data]
     {:source (or (:source new-data) (:source old-data))
      :username (or (:username new-data) (:username old-data))
      :password (or (:password new-data) (:password old-data))})
 
-  ; TODO : Does not work! Repair plis
   (defn update-entry
     "Updates a given entry"
     [username source-name new-data]
-    (let [user (get-user username)]
-      (let [entry (get-entry username source-name)]
-        (delete-entry username source-name)
-        (if (nil? entry) (mc/update-by-id
-                               db
-                               "users"
-                               (:_id user)
-                               (assoc user :entries (conj (:entries user) (combine-entrydata entry new-data))))))))
+    (let [user (get-user username)
+          entry-split (group-by
+                        #(re-matches (re-pattern source-name) (:source %))
+                        (:entries user))
+          old-data (first (get entry-split source-name))
+          entry-rest (get entry-split nil)]
+         (->> (combine-entrydata old-data new-data)
+              (conj entry-rest ,,,)
+              (assoc user :entries ,,,)
+              (mc/update-by-id
+               db
+               "users"
+               (:_id user)
+               ,,,))))
 
+  (defn delete-entry [username source-name]
+    (let [user (get-user username)]
+      (->> (user :entries)
+           (filter
+             #(not (re-matches (re-pattern source-name) (:source %)))
+             ,,,)
+           (assoc user :entries ,,,)
+           (mc/update-by-id
+            db
+            "users"
+            (:_id user)
+            ,,,))))
 
   ; </editor-fold>
 

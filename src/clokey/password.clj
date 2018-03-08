@@ -4,6 +4,10 @@
             [cheshire.core :refer :all]
             [clokey.utils :as utils]))
 
+; <editor-fold> --------PASSWORD ACCESS-----------
+
+;</editor-fold>
+
 ; <editor-fold> --------PASSWORD GENERATION -----------
 
 (def all-chars-range (range 33 127))
@@ -24,7 +28,7 @@
 
 (defn generate-password
   "Generates a password in the pattern of XXX-XXX-XXX-XXX"
-  ([] (generate-password 4 easy-range))
+  ([] (generate-password "4" easy-range))
   ([number-of-blocks range]
    (loop [blocks []
           number-of-blocks (read-string number-of-blocks)]

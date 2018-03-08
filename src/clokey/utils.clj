@@ -1,16 +1,19 @@
 (ns clokey.utils
   (:require [clojure.string :as string]
             [clojure.java.io :as io]
-            [cheshire.core :refer :all]))
+            [cheshire.core :refer :all]
+            [buddy.hashers :as hashers]))
 
 
 ; <editor-fold> ---------ENCRYPTION---------------------
 
 (defn encrypt [pw]
-  pw)
+   (hashers/derive pw))
 
-(defn decrypt [pw]
-  pw)
+(defn decrypt [pw hash]
+  (hashers/check pw hash))
+
+(defn get-entry-data [username entry])
 
 ; </editor-fold>
 
