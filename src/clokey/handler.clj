@@ -4,33 +4,46 @@
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [clojure.string :as string]
             [clokey.user :as user]
-            [clokey.utils :as utils]
-            [monger.core :as mg]
-            [monger.collection :as mc])
-  (:import  [com.mongodb MongoOptions ServerAddress]
-            org.bson.types.ObjectId)
+            [clokey.utils :as utils])
+  (:import  [org.bson.types.ObjectId]))
 
 
 
 ;; define routes
-  (defroutes app-routes
-    (GET "/hello-there" [] "General Kenobi")
-    (GET "/user/:id" [id]
-      (str "<h1>HI USER NR " id "</h1>"))
-    (GET "/encrypt/:pw" [pw]
-      (.println System/out "test")
-      (utils/encrypt pw))
-    (POST "/" request
-      (str request))
-    (GET "/foobar" [x y & z]
-      (str x ", " y ", " z))
-    (POST "/create-user" [username email mpw]
-      (println username " " mpw)
-      (let [new-user (user/create-user username email mpw)]
-        (mc/insert-and-return db "users" new-user)))
+(defroutes app-routes
+  (GET "/hello-there" [] "General Kenobi")
+  (GET "/user/:id" [id]
+    (str "<h1>HI USER NR " id "</h1>"))
+  (GET "/encrypt/:pw" [pw]
+    (.println System/out "test")
+    (utils/encrypt pw))
+  (POST "/" request
+    (str request))
+  (GET "/foobar" [x y & z]
+    (str x ", " y ", " z))
+  (POST "/create-user" [username email mpw]
+    (println username " " mpw))
 
-    (route/not-found "Not Found"))
+  ; CREATE
+  
+
+  ; READ
+  (GET "/get-user/:username" [username]
+    (str (user/get-user username)))
+  (GET "/get-entry/:entry" [username source-name]
+    (str (user/get-entry username source-name)))
+
+  ; UPDATE
 
 
-  (def app
-    (wrap-defaults app-routes (assoc-in site-defaults [:security :anti-forgery] false))))
+  ; DELETE
+  (DELETE "/delete-user/:username" [username]
+    (user/delete-user username))
+  (DELETE "/delete-entry" [username source-name]
+    (user/delete-entry username source-name))
+
+  (route/not-found "Not Found"))
+
+
+(def app
+  (wrap-defaults app-routes (assoc-in site-defaults [:security :anti-forgery] false)))
