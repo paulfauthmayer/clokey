@@ -25,19 +25,25 @@
     (println username " " mpw))
 
   ; CREATE
-  
+  (POST "/create-user") [username email mpw]
+    (user/create-user username email mpw)
+  (POST "/create-entry") [user source username password]
+    (set-entry user (create-entry source username password))
 
   ; READ
-  (GET "/get-user/:username" [username]
-    (str (user/get-user username)))
-  (GET "/get-entry/:entry" [username source-name]
-    (str (user/get-entry username source-name)))
+  (GET "/get-user" [username]
+    (user/get-user username))
+  (GET "/get-entry" [username source-name]
+    (user/get-entry username source-name))
 
   ; UPDATE
-
+  (PUT "/update-user" [username userdata]
+    (user/update-user username userdata))
+  (PUT "/update-entry" [username source-name new-data]
+    (user/update-entry username source-name new-data))
 
   ; DELETE
-  (DELETE "/delete-user/:username" [username]
+  (DELETE "/delete-user" [username]
     (user/delete-user username))
   (DELETE "/delete-entry" [username source-name]
     (user/delete-entry username source-name))
