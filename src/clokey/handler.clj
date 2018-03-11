@@ -27,8 +27,10 @@
 
 (defn home
   [request]
-  (let [content (slurp (io/resource "mainpage.html"))]
-    (render content request)))
+  (if-not (authenticated? (:session request))
+    (throw-unauthorized)
+    (let [content (slurp (io/resource "mainpage.html"))]
+      (render content request))))
 
 (defn login
   [request]
