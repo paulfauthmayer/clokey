@@ -41,11 +41,11 @@
 
       function UserAction() {
           var xhttp = new XMLHttpRequest();
-          xhttp.open("GET", "http://localhost:3000/get-user?username=schwanzus_longus", false);
+          xhttp.open("GET", "http://localhost:3000/get-user?username=Dieter", true);
           xhttp.setRequestHeader("Content-type", "application/json");
           xhttp.send();
           console.log(xhttp.responseText)
-          var response = JSON.parse(xhttp.responseText);
+          var response = xhttp.responseText;
       }
 
   </script>

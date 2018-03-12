@@ -21,6 +21,8 @@
 
 ; <editor-fold> -------- AUTHENTICATION -----------
 
+(use 'ring.util.json-response)
+
 ;; AUTHENTICATION
 
 ; login
@@ -85,9 +87,9 @@
 
   ; READ
   (GET "/get-user" [username]
-    (apply user/get-user username))
+    (json-response (user/remove-id (user/get-user username))))
   (GET "/get-entry" [username source-name]
-    (user/get-entry username source-name))
+    (json-response (user/get-entry username source-name)))
 
   ; UPDATE
   (PUT "/update-user" [username userdata]

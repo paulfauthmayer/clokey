@@ -143,8 +143,17 @@
             db
             "users"
             (:_id user)
-            ,,,)))))
+            ,,,))))
 
   ; </editor-fold>
 
-  
+  (defn get-user-frontend
+    ""
+    [username]
+    (-> (get-user username)
+        (dissoc ,,, :_id)))
+
+  (defn remove-id
+    ""
+    [input]
+    (dissoc input :_id)))

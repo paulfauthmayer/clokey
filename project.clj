@@ -9,6 +9,7 @@
                  [cheshire "5.8.0"]
                  [compojure "1.5.1"]
                  [ring/ring-defaults "0.2.1"]
+                 [ring-json-response "0.2.0"]
                  [com.novemberain/monger "3.1.0"]
                  [buddy "2.0.0"]]
   :plugins [[lein-ring "0.9.7"]]
