@@ -27,6 +27,7 @@
 
 (defn home
   [request]
+  (println authenticated?)
   (if-not (authenticated? (:session request))
     (throw-unauthorized)
     (let [content (slurp (io/resource "mainpage.html"))]
@@ -84,7 +85,7 @@
 
   ; READ
   (GET "/get-user" [username]
-    (user/get-user username))
+    (apply user/get-user username))
   (GET "/get-entry" [username source-name]
     (user/get-entry username source-name))
 
