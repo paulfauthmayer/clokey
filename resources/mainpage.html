@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <!-- Bootstrap CSS -->
+  <!-- Bootstrap CSS-->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <link rel="stylesheet" href="./customStyles.css" />
 
@@ -14,131 +14,252 @@
 
 </head>
 
-<body>
+<body onload="load()">
 
   <script type="text/javascript">
-    // function showAndHide(hide, show) {
-    //
-    //   var toHide = document.getElementsByClassName(hide)[0];
-    //   var toShow = document.getElementsByClassName(show)[0];
-    //
-    //   console.log(toHide)
-    //   console.log(toShow)
-    //
-    //   toHide.style.display = "none";
-    //   toShow.style.display = "inline-block"
-    //
-    // }
-    //
-    // function testRequest() {
-    //
-    //   console.log("in test request")
-    //   $.getJSON("http://localhost:3000/get-user?username=schwanzus_longus", function(data){
-    //     console.log(data)
-    //   } )
-    //
-    //   };
+    "use strict"
 
-      function UserAction() {
-          var xhttp = new XMLHttpRequest();
-          xhttp.open("GET", "http://localhost:3000/get-user?username=Dieter", true);
-          xhttp.setRequestHeader("Content-type", "application/json");
-          xhttp.send();
-          console.log(xhttp.responseText)
-          var response = xhttp.responseText;
+      var g_current_user;
+
+      var load = () => {
+        _parse_get_user().then((resp) => {
+            g_current_user = resp;
+            set_user_fields();
+        });
+      }
+
+      //API call GET "get-user" -> returns user map
+      function _get_user() {
+          return new Promise((resolve, reject) => {
+            var xmlhttp = new XMLHttpRequest();
+
+            xmlhttp.onreadystatechange = function() {
+                if (xmlhttp.readyState == XMLHttpRequest.DONE) {   // XMLHttpRequest.DONE == 4
+                   if (xmlhttp.status == 200) {
+                      resolve(JSON.parse(xmlhttp.responseText));
+                   }
+                   else if (xmlhttp.status == 400) {
+                      reject("400");
+                   }
+                   else {
+                      reject("unknown error");
+                   }
+                }
+            };
+
+            xmlhttp.open("GET", "http://localhost:3000/get-current-user", true);
+            xmlhttp.send();
+          });
+      }
+
+      //Parse API Object in Javascript Map Structure
+      function _parse_get_user() {
+        return new Promise((resolve, reject) => {
+          _get_user().then((resp) => {
+              console.log("API response:", resp);
+              let map = new Map();
+
+              map.set("name", resp.name);
+              // map.set("mpw", resp.mpw); --> should not be visible!
+              map.set("email", resp.email);
+
+              const _entries = resp.entries;
+              var entries = [];
+
+              for (var i = 0; i < _entries.length; i++) {
+                  //Temp. Map for entries
+                  let m = new Map();
+
+                  m.set("source", _entries[i].source);
+                  m.set("username", _entries[i].username);
+                  m.set("password", _entries[i].password);
+
+                  entries.push(m);
+              }
+
+              map.set("entries", entries);
+
+              resolve(map);
+          });
+        });
+      }
+
+      //Handler for changed option in select box1
+      function select_changed(){
+
+          const apidata = g_current_user;
+          const e = document.getElementById("sel1");
+          const selected = e.options[e.selectedIndex].text;
+
+          var entries = apidata.get("entries");
+          var entryindex = 0;
+          //Find selected element in the data structure -> by source
+          for (var i = 0; i < entries.length; i++) {
+              if(entries[i].get("source")  === selected){
+                  entryindex = i;
+              }
+          }
+          //Write the the corresponding username/pw values into the frontend
+          document.getElementById("display_username").setAttribute("value", entries[entryindex].get("username"));
+          document.getElementById("display_password").setAttribute("value", entries[entryindex].get("password"));
+      }
+
+      //Handler for changed option in select box2
+      function select_changed_editbox(){
+
+          const apidata = g_current_user;
+          const e = document.getElementById("sel2");
+          const selected = e.options[e.selectedIndex].text;
+
+          var entries = apidata.get("entries");
+          var entryindex = 0;
+          //Find selected element in the data structure -> by source
+          for (var i = 0; i < entries.length; i++) {
+              if(entries[i].get("source")  === selected){
+                  entryindex = i;
+              }
+          }
+          //Write the the corresponding username/pw values into the frontend
+          document.getElementById("edit_source").setAttribute("value", entries[entryindex].get("source"));
+          document.getElementById("edit_username").setAttribute("value", entries[entryindex].get("username"));
+          document.getElementById("edit_password").setAttribute("value", entries[entryindex].get("password"));
+      }
+
+      //dynamically create select option tags and default fill fields
+      function set_user_fields() {
+
+          const apidata = g_current_user;
+
+          var entries = apidata.get("entries");
+          var selectList = document.getElementById("sel1");
+          var selectList2 = document.getElementById("sel2");
+
+          //Fill select element options
+          for (var i = 0; i < entries.length; i++) {
+              var option = document.createElement("option");
+              option.value = entries[i].get("source");
+              option.text = entries[i].get("source");
+              selectList.appendChild(option);
+          }
+
+          for (var i = 0; i < entries.length; i++) {
+              var option = document.createElement("option");
+              option.value = entries[i].get("source");
+              option.text = entries[i].get("source");
+              selectList2.appendChild(option);
+          }
+
+          //Default Fill username/password fields with first result
+          document.getElementById("display_username").setAttribute("value", entries[0].get("username"));
+          document.getElementById("display_password").setAttribute("value", entries[0].get("password"));
+
+          document.getElementById("edit_source").setAttribute("value", entries[0].get("source"));
+          document.getElementById("edit_username").setAttribute("value", entries[0].get("username"));
+          document.getElementById("edit_password").setAttribute("value", entries[0].get("password"));
+      }
+
+      //Clear fields
+      function flush() {
+          document.getElementById("edit_source").setAttribute("value", "");
+          document.getElementById("edit_username").setAttribute("value", "");
+          document.getElementById("edit_password").setAttribute("value", "");
+      }
+
+      //If the specified source already exists, call update, if not call create
+      function post() {
+
+      }
+
+      function _eval_source () {
+          return new Promise((resolve,reject) => {
+              //Getting the current source field value
+              let src_frontend = document.getElementById("edit_source").value;
+              let entries = g_current_user.get("entries");
+              let b = false;
+
+              for (var i = 0; i < entries.length; i++) {
+                  if (src_frontend === entries[i) {
+                      b = true;
+                  }
+              }
+              if (b === true) {
+                  resolve(true)
+              } else {
+                  resolve(false)
+              }
+          });
+      }
+
+      function _doUpdate() {
+
+      }
+
+      function _do_Create() {
+
       }
 
   </script>
 
   <div id="wrapper">
 
-    <button type="submit" onclick="UserAction()">Search</button>
-    <button type="button" name="button" onclick="testRequest()">TESTREQUEST</button>
-
     <hr style="width:100%;color:black;height:5px;size:5px;">
+    <h1>SELECT ENTRY</h1>
+    <div class="form-group">
+      <label for="sel1">Select list:</label>
+      <select class="form-control" id="sel1" onchange="select_changed()">
+          <!-- Filled dynamically -->
+      </select>
+    </div>
 
-    <form class="main-container">
-      <h1>MAIN</h1>
-      <div id="bluebox">
-        Will be generated content at some point
+    <div class="input-group mb-3">
+      <input id="display_username" type="text" class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+      <div class="input-group-append">
+        <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
       </div>
+    </div>
 
-      <div class="input-group mb-3">
-        <input type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="www.example.com">
-        <div class="input-group-append side-buttoncolor side-button-width">
-          <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Pick URL</button>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <a class="dropdown-item" href="#">Something else here</a>
-            <div role="separator" class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Separated link</a>
-          </div>
-        </div>
+    <div class="input-group mb-3">
+      <input id="display_password" type="text" class="form-control" placeholder="Password" aria-label="Recipient's username" aria-describedby="basic-addon2">
+      <div class="input-group-append">
+        <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label for="sel1">Select list:</label>
-        <select class="form-control" id="sel1">
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-        </select>
+    <h1>EDIT </h1>
+
+    <div class="form-group">
+      <label for="sel2">Select list:</label>
+      <select class="form-control" id="sel2" onchange="select_changed_editbox()">
+          <!-- Filled dynamically -->
+      </select>
+    </div>
+
+    <div class="input-group mb-3">
+      <input id="edit_source" type="text" class="form-control" placeholder="Source" aria-label="Recipient's username" aria-describedby="basic-addon2">
+      <div class="input-group-append">
+        <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
       </div>
+    </div>
 
-      <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
-        <div class="input-group-append">
-          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
-        </div>
+    <div class="input-group mb-3">
+      <input id="edit_username" type="text" class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+      <div class="input-group-append">
+        <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
       </div>
+    </div>
 
-      <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Password" aria-label="Recipient's username" aria-describedby="basic-addon2">
-        <div class="input-group-append">
-          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
-        </div>
+    <div class="input-group mb-3">
+      <input id="edit_password" type="text" class="form-control" placeholder="Password" aria-label="Recipient's username" aria-describedby="basic-addon2">
+      <div class="input-group-append">
+        <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
       </div>
-    </form>
-
-    <form class="edit-container">
-      <h1>EDIT </h1>
-
-      <div class="input-group mb-3">
-        <input type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="www.example.com">
-        <div class="input-group-append side-buttoncolor side-button-width">
-          <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Pick URL</button>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <a class="dropdown-item" href="#">Something else here</a>
-            <div role="separator" class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Separated link</a>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
-        <div class="input-group-append">
-          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
-        </div>
-      </div>
-
-      <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Password" aria-label="Recipient's username" aria-describedby="basic-addon2">
-        <div class="input-group-append">
-          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
-        </div>
-      </div>
-    </form>
-
+    </div>
+    <button type="button" onClick="flush()">Clear</button>
+    <button type="button" onClick="post()">Create/Update</button>
+    <button type="button" onClick="delete()">Delete</button>
   </div>
 
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <!-->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
