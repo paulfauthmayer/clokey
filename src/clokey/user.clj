@@ -5,12 +5,10 @@
             [clokey.password :as password]
             [clokey.utils :as utils]
             [monger.core :as mg]
-            [monger.collection :as mc])
+            [monger.collection :as mc]
+            [buddy.hashers :as hashers])
   (:import  [com.mongodb MongoOptions ServerAddress]
-           org.bson.types.ObjectId))
-
-
-
+            org.bson.types.ObjectId))
 
  ;; initialize mongodb
 
@@ -30,10 +28,9 @@
   (defn create-user [username email mpw]
     (let [new-user
           {:name username
-           :mpw mpw
+           :mpw (hashers/derive mpw)
            :email email
-           :entries
-           []}]
+           :entries []}]
       (save-user new-user)
       new-user))
 
@@ -51,7 +48,7 @@
     "Helper function ..."
     [old-data new-data]
     {:name (or (:name new-data) (:name old-data))
-     :mpw (or (:mpw new-data) (:mpw old-data))
+     :mpw (or (hashers/derive (:mpw new-data)) (:mpw old-data))
      :email (or (:email new-data) (:email old-data))
      :entries (or (:entries old-data) [])})
 
@@ -147,6 +144,8 @@
 
   ; </editor-fold>
 
+
+
   (defn get-user-frontend
     ""
     [username]
@@ -156,4 +155,9 @@
   (defn remove-id
     ""
     [input]
-    (dissoc input :_id)))
+    (dissoc input :_id))
+
+  (defn remove-mpw
+    ""
+    [input]
+    (dissoc input :mpw)))

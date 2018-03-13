@@ -6,13 +6,13 @@
             [clokey.user :as user]
             [clokey.utils :as utils]
             [buddy.hashers :as hashers]
+            [ring.util.json-response :as json-response]
             ; ↓ these are for buddy.auth
             [compojure.response :refer [render]]
             [clojure.java.io :as io]
             [ring.util.response :refer [response redirect content-type]]
             [ring.middleware.session :refer [wrap-session]]
             [ring.middleware.params :refer [wrap-params]]
-            ;[ring.adapter.jetty :as jetty]
 
             [buddy.auth :refer [authenticated? throw-unauthorized]]
             [buddy.auth.backends.session :refer [session-backend]]
@@ -22,17 +22,15 @@
 
 ; <editor-fold> -------- AUTHENTICATION -----------
 
-(use 'ring.util.json-response)
-
 ;; AUTHENTICATION
 
-; login
+; Login
 
 (defn home
   [request]
   (println authenticated?)
   (if-not (authenticated? (:session request))
-    (throw-unauthorized)
+    (redirect "/login")
     (let [content (slurp (io/resource "mainpage.html"))]
       (render content request))))
 
@@ -60,10 +58,9 @@
         password (get-in request [:form-params "password"])
         session (:session request)
         found-password (:mpw (user/get-user username))]
-    ;TODO: do this with encryption
     (if (and
          found-password
-         (= found-password password))
+         (hashers/check password found-password))
       (let [updated-session (assoc session :identity (keyword username))]
         (-> (redirect "/")
             (assoc :session updated-session)))
@@ -89,30 +86,39 @@
   ; CREATE
   (POST "/create-user" [username email mpw]
     (user/create-user username email mpw))
-  (POST "/create-entry" [user source username password]
-    (user/set-entry user (user/create-entry source username password)))
+  (POST "/create-entry" [source username password :as r]
+    (->> (user/create-entry source username password)
+         (user/set-entry get-identity ,,,)))
 
   ; READ
   (GET "/get-current-user" [:as r]
     (-> (get-identity r)
         (user/get-user ,,,)
         (user/remove-id ,,,)
+        (user/remove-mpw ,,,)
         (json-response ,,,)))
-  (GET "/get-entry" [username source-name]
-    (json-response (user/get-entry username source-name)))
+  (GET "/get-entry" [source-name :as r]
+    (-> (get-identity r)
+        (user/get-entry ,,, source-name)
+        (json-response ,,,)))
 
   ; UPDATE
-  (PUT "/update-user" [username userdata]
-    (user/update-user username userdata))
-  (PUT "/update-entry" [username source-name new-data]
-    (user/update-entry username source-name new-data))
+  (PUT "/update-user" [userdata :as r]
+    (-> (get-identity r)
+        (user/update-user ,,, userdata)))
+  (PUT "/update-entry" [source-name new-data :as r]
+    (-> (get-identity r)
+        (user/update-entry ,,, source-name new-data)))
 
   ; DELETE
-  (DELETE "/delete-user" [username]
-    (user/delete-user username))
-  (DELETE "/delete-entry" [username source-name]
-    (user/delete-entry username source-name))
+  (DELETE "/delete-user" [:as r]
+    (-> (get-identity r)
+        (user/delete-user ,,,)))
+  (DELETE "/delete-entry" [source-name :as r]
+    (-> (get-identity r)
+        (user/delete-entry ,,, source-name)))
 
+  ; ELSE
   (route/not-found "Not Found")
 
   ;; Spickzettel
@@ -145,7 +151,6 @@
       (redirect (format "/login?next=%s" current-url)))))
 
 ;; Create an instance of auth backend.
-
 (def auth-backend
   (session-backend {:unauthorized-handler unauthorized-handler}))
 
