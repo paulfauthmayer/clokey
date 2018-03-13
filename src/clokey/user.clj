@@ -25,7 +25,9 @@
     [user]
     (mc/save-and-return db "users" user))
 
-  (defn create-user [username email mpw]
+  (defn create-user
+    "Creates a user object and passes the object to save-user to save into the db, hashes master password"
+    [username email mpw]
     (let [new-user
           {:name username
            :mpw (hashers/derive mpw)
@@ -35,17 +37,17 @@
       new-user))
 
   (defn get-user
-    "Reads a user from Database by username and provides data"
+    "Reads a user from Database by username and provides the user object"
     [username]
     (mc/find-one-as-map db "users" {:name username}))
 
   (defn delete-user
-    "Delete a user"
+    "Delete a complete user object"
     [username]
     (mc/remove-by-id db "users" (:_id (get-user username))))
 
   (defn combine-userdata
-    "Helper function ..."
+    "Helper function combining old existing user data with new input data."
     [old-data new-data]
     {:name (or (:name new-data) (:name old-data))
      :mpw (or (hashers/derive (:mpw new-data)) (:mpw old-data))
@@ -53,7 +55,7 @@
      :entries (or (:entries old-data) [])})
 
   (defn update-user
-    "Update userdata by a given input username"
+    "Update userdata by a given input username, combines input data with existing data"
     [username userdata]
     (let [user (get-user username)]
       (mc/update-by-id  db
@@ -68,7 +70,7 @@
   ; <editor-fold> --------ENTRY CRUD -----------
 
   (defn create-entry
-    "creates entry if requirements are met, does other stuff otherwise" ;TODO: REDACT!
+    "Creates an entry object. Password can be either specified or auto-generated. Object will not be linked to user by this function"
     ([source username pw]
      (println source username "." pw ".")
      (cond
@@ -81,7 +83,7 @@
        :else nil)))
 
   (defn set-entry
-    ""
+    "Associates an entry object to a user. Persists the user object to the database"
     [username entry]
     (let [user (get-user username)]
       (println user)
@@ -95,56 +97,43 @@
                         :entries (conj (:entries user) entry)})))
 
   (defn get-entry
-    ""
+    "Reads an entry from the database by given username/entry source-name"
     [username source-name]
-    (println "username" username "source-name" source-name)
     (let [user (get-user username)]
-      (println "user" user)
       (let [entries (user :entries)]
-        (println "entries:" entries)
        (filter
         #(re-matches (re-pattern source-name) (:source %))
         entries))))
 
   (defn combine-entrydata
-    ;TODO: recursively
-    "Helper function ..."
+    "Helper function combining old existing entry data with new input data."
     [old-data new-data]
     {:source (or (:source new-data) (:source old-data))
      :username (or (:username new-data) (:username old-data))
      :password (or (:password new-data) (:password old-data))})
 
-  (defn print-and-return [input]
-    (println input)
-    input)
-
   (defn update-entry
-    "Updates a given entry"
+    "Reads an entry from database and updates it, persists the user object back to the db"
     [username source-name new-data]
-    (println "NEW DATA" new-data)
     (let [user (get-user username)
           entry-split (group-by
                         #(re-matches (re-pattern source-name) (:source %))
                         (:entries user))]
-         (println "found" (get entry-split source-name))
-         (println "not found" (get entry-split nil))
          (->> (combine-entrydata
                (get entry-split source-name)
                new-data)
-              (print-and-return ,,,)
               (vector ,,,)
-              (print-and-return ,,,)
               (into (get entry-split nil) ,,,)
-              (print-and-return ,,,)
               (assoc user :entries ,,,)
-              (print-and-return ,,,)
               (mc/update-by-id
                db
                "users"
                (:_id user)
                ,,,))))
 
-  (defn delete-entry [username source-name]
+  (defn delete-entry
+    "Delete an entry by a given source, persists the modified user objects back to the db"
+    [username source-name]
     (let [user (get-user username)]
       (->> (user :entries)
            (filter
@@ -159,20 +148,12 @@
 
   ; </editor-fold>
 
-
-
-  (defn get-user-frontend
-    ""
-    [username]
-    (-> (get-user username)
-        (dissoc ,,, :_id)))
-
   (defn remove-id
-    ""
+    "Removes Mongo db specific id from user object, the id should not be passed to the frontend"
     [input]
     (dissoc input :_id))
 
   (defn remove-mpw
-    ""
+    "Removes master password from the user object, master password needs to stay secure"
     [input]
     (dissoc input :mpw)))

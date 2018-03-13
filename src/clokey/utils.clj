@@ -7,16 +7,17 @@
 
 ; <editor-fold> ---------ENCRYPTION---------------------
 
-(defn encrypt [pw]
+(defn encrypt
+   "Encrypt a password, using bcrypt"
+   [pw]
    (hashers/derive pw))
 
-(defn decrypt [pw hash]
+(defn decrypt
+  "Decrypt a password, using bcrypt"
+  [pw hash]
   (hashers/check pw hash))
 
-(defn get-entry-data [username entry])
-
 ; </editor-fold>
-
 
 
 ; <editor-fold> --------FILESYSTEM READ/WRITE -----------

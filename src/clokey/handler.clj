@@ -72,6 +72,7 @@
 
 ;; define routes
 (defn get-identity
+  "Get the currently logged in username"
   [request]
   (-> (:session request)
       (:identity ,,,)))
@@ -103,19 +104,15 @@
         (assoc :session {:identity (keyword username)})))
 
   (POST "/create-or-update-entry" [source username password :as r]
-    (println "create or update:")
-    (println source username password)
     (let [user (get-identity r)]
       (if (empty? (user/get-entry user source))
         (do
           (println "empty true")
           (some->>  (user/create-entry source username password)
-                    (user/print-and-return ,,,)
                     (user/set-entry user ,,,)))
         (do
           (println "empty false")
           (some->>  (user/create-entry source username password)
-                    (user/print-and-return ,,,)
                     (user/update-entry user source ,,,))))))
 
   ; UPDATE
@@ -132,22 +129,7 @@
         (user/delete-entry ,,, source)))
 
   ; ELSE
-  (route/not-found "Not Found")
-
-  ;; Spickzettel
-
-  (GET "/hello-there" [] "General Kenobi")
-  (GET "/user/:id" [id]
-    (str "<h1>HI USER NR " id "</h1>"))
-  (GET "/encrypt/:pw" [pw]
-    (.println System/out "test")
-    (utils/encrypt pw))
-  (POST "/" request
-    (str request))
-  (GET "/foobar" [x y & z]
-    (str x ", " y ", " z))
-  (POST "/create-user" [username email mpw]
-    (println username " " mpw)))
+  (route/not-found "Not Found"))
 
 (defn unauthorized-handler
   [request metadata]
