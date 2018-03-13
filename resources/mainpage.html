@@ -175,7 +175,7 @@
 
 
     <div class="form-group">
-      <select class="form-control" id="sel2" onchange="select_changed_editbox()">
+      <select class="form-control select-picker" data-live-search="true" id="sel2" onchange="select_changed_editbox()">
           <!-- Filled dynamically -->
       </select>
     </div>
@@ -184,7 +184,7 @@
       <input id="edit_source"class="form-control" placeholder="Source" aria-label="Recipient's username" aria-describedby="basic-addon2">
       <div class="input-group-append">
         <span class="input-group-text side-button-width" id="basic-addon2">
-          <i class="fa fa-internet-explorer" style="font-size:20px;"></i>
+          <i class="fa fa-external-link-square" style="font-size:20px;"></i>
         </span>
       </div>
     </div>
@@ -211,10 +211,10 @@
 
 
     <button type="button" onClick="flush()" class="btn btn-default">Clear</button>
-    <button type="button" onClick="doCreateOrUpdate();window.location.reload();" class="btn btn-default">Create/Update</button>
+    <button type="button" onClick="doCreateOrUpdate();window.location.reload();" class="btn btn-default">Create | Update</button>
     <button type="button" onClick="doDelete()" class="btn btn-default">Delete</button>
 
-    <!-- <hr style="width:100%;color:black;height:5px;size:5px;"> -->
+    <!-- <hr style="width:100%;color:#22609e;height:5px;size:5px;"> -->
     <form class="" action="http://localhost:3000/logout" method="get">
         <button type="submit" name="button" class="btn btn-default">Logout</button>
     </form>
@@ -222,7 +222,7 @@
   </div>
 
 
-  <!-->
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>

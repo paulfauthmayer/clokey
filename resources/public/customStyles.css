@@ -8,7 +8,7 @@ body {
   width:500px;
   margin:0 auto; */
 
-  padding-top: 90px;
+  padding-top: 75px;
   width: 500px;
   height: 600px;
 
@@ -29,6 +29,7 @@ body {
 
 h1 {
   font-family: Merriweather, serif;
+  color: #22609e;
 }
 
 #bluebox {
@@ -69,15 +70,30 @@ h1 {
   border: 1px solid rgb(200,200,200);
   background-color: white;
   margin: 5px 5px;
-  width: 27%;
+  width: 30.5%;
+}
+
+.btn:hover {
+  background-color: #22609e;
+  color: white;
 }
 
 .signup-msg, .login-msg {
   padding: 10px 0
 }
 
+.signup-msg:hover, .login-msg:hover {
+  color: #22609e;
+  cursor: pointer;
+}
+
+.fa {
+  color: #22609e
+}
+
 hr {
-  height: 1px;
+  height: 10px;
   border: 0;
-  /* box-shadow: inset 0 12px 12px -12px rgba(0, 0, 0, 0.5); */
+  color: rgb(34,96,158)
+  /*box-shadow: inset 0 12px 12px -12px rgba(34,96,158, 1); */
 }
