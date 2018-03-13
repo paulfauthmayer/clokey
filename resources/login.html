@@ -9,6 +9,8 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <link rel="stylesheet" href="./customStyles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Merriweather" rel="stylesheet">
 
   <title>Clokey Password Manager</title>
 
@@ -47,24 +49,28 @@
 
   <div id="wrapper">
 
-    <form class="login-container" action="http://localhost:3000/login" method="post">
+    <form class="login-container container" action="http://localhost:3000/login" method="post">
       <h1>LOGIN</h1>
       <div class="input-group mb-3">
         <input type="text" class="form-control" name="username" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
         <div class="input-group-append">
-          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+          <span class="input-group-text side-button-width" id="basic-addon2">
+            <i class="fa fa-user-circle" style="font-size:20px;"></i>
+          </span>
         </div>
       </div>
 
       <div class="input-group mb-3">
         <input type="text" class="form-control" name="password" placeholder="Password" aria-label="Recipient's username" aria-describedby="basic-addon2">
         <div class="input-group-append">
-          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+          <span class="input-group-text side-button-width" id="basic-addon2">
+            <i class="fa fa-key" style="font-size:20px;"></i>
+          </span>
         </div>
       </div>
 
 
-      <button type="submit" name="Login" value="Login">
+      <button type="submit" name="Login" value="Login" class="btn btn-default">
         Login
       </button>
 
@@ -94,7 +100,7 @@
         </div>
       </div>
 
-      <button type="submit" name="Create" value="Create">Create User</button>
+      <button type="submit" name="Create" value="Create" class="btn btn-default">Create User</button>
 
     </form>
 
@@ -103,8 +109,6 @@
                         ">Don't have an account yet? Sign up here!</p>
     <p class="login-msg" href="" onclick="showAndHide('create-user-container','login-container')">Already have an account? Login here!</p>
 
-
-    <hr style="width:100%;color:black;height:5px;size:5px;">
 
   </div>
 

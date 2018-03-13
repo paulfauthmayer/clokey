@@ -9,6 +9,8 @@
   <!-- Bootstrap CSS-->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <link rel="stylesheet" href="./customStyles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Merriweather" rel="stylesheet">
 
   <title>Clokey Password Manager</title>
 
@@ -168,11 +170,11 @@
 
   <div id="wrapper">
 
+    <h1>CLOKEY</h1>
     <hr style="width:100%;color:black;height:5px;size:5px;">
-    <h1>SELECT ENTRY</h1>
+
 
     <div class="form-group">
-      <label for="sel2">Select list:</label>
       <select class="form-control" id="sel2" onchange="select_changed_editbox()">
           <!-- Filled dynamically -->
       </select>
@@ -181,31 +183,40 @@
     <div class="input-group mb-3">
       <input id="edit_source"class="form-control" placeholder="Source" aria-label="Recipient's username" aria-describedby="basic-addon2">
       <div class="input-group-append">
-        <span class="input-group-text side-button-width" id="basic-addon2">Site</span>
+        <span class="input-group-text side-button-width" id="basic-addon2">
+          <i class="fa fa-internet-explorer" style="font-size:20px;"></i>
+        </span>
       </div>
     </div>
 
     <div class="input-group mb-3">
       <input id="edit_username"class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
       <div class="input-group-append">
-        <span class="input-group-text side-button-width" id="basic-addon2">Username</span>
+        <span class="input-group-text side-button-width" id="basic-addon2">
+          <i class="fa fa-user-circle" style="font-size:20px;"></i>
+        </span>
       </div>
     </div>
 
     <div class="input-group mb-3">
       <input id="edit_password" class="form-control" placeholder="Password" aria-label="Recipient's username" aria-describedby="basic-addon2">
       <div class="input-group-append">
-        <span class="input-group-text side-button-width" id="basic-addon2">Password</span>
+        <span class="input-group-text side-button-width" id="basic-addon2">
+          <i class="fa fa-key" style="font-size:20px;"></i>
+        </span>
       </div>
     </div>
-    <button type="button" onClick="flush()">Clear</button>
-    <button type="button" onClick="doCreateOrUpdate()">Create/Update</button>
-    <button type="button" onClick="doDelete()">Delete</button>
+    <button type="button" onClick="flush()" class="btn btn-default">Clear</button>
+    <button type="button" onClick="doCreateOrUpdate()" class="btn btn-default">Create/Update</button>
+    <button type="button" onClick="doDelete()" class="btn btn-default">Delete</button>
+
+    <hr style="width:100%;color:black;height:5px;size:5px;">
+    <form class="" action="http://localhost:3000/logout" method="get">
+        <button type="submit" name="button" class="btn btn-default">Logout</button>
+    </form>
+
   </div>
-  <hr style="width:100%;color:black;height:5px;size:5px;">
-  <form class="" action="http://localhost:3000/logout" method="get">
-      <button type="submit" name="button">Logout</button>
-  </form>
+
 
   <!-->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
