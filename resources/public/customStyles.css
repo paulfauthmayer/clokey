@@ -14,6 +14,18 @@
   vertical-align: middle;
 }
 
+.create-user-container {
+  display: none;
+}
+
+.create-user-container, .login-container{
+  width: 100%;
+}
+
+.login-msg {
+  display: none;
+}
+
 .side-buttoncolor {
   background-color:#e9ecef;
 }

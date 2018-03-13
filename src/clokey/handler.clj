@@ -106,9 +106,10 @@
   (PUT "/update-user" [userdata :as r]
     (-> (get-identity r)
         (user/update-user ,,, userdata)))
-  (PUT "/update-entry" [source-name new-data :as r]
-    (-> (get-identity r)
-        (user/update-entry ,,, source-name new-data)))
+  (PUT "/update-entry" [source username password :as r]
+    (let [new-data (hash-map :source source :password password :username username)]
+      (-> (get-identity r)
+          (user/update-entry ,,, source new-data))))
 
   ; DELETE
   (DELETE "/delete-user" [:as r]

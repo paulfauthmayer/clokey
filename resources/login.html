@@ -19,6 +19,9 @@
   <script type="text/javascript">
     function showAndHide(hide, show) {
 
+      console.log(hide)
+      console.log(show)
+
       var toHide = document.getElementsByClassName(hide)[0];
       var toShow = document.getElementsByClassName(show)[0];
 
@@ -27,6 +30,17 @@
 
       toHide.style.display = "none";
       toShow.style.display = "inline-block"
+
+      if(hide === "login-container") {
+        console.log("1")
+        document.getElementsByClassName("signup-msg")[0].style.display = "none";
+        document.getElementsByClassName("login-msg")[0].style.display = "inline-block";
+      }
+      else {
+        console.log("2")
+        document.getElementsByClassName("signup-msg")[0].style.display = "inline-block";
+        document.getElementsByClassName("login-msg")[0].style.display = "none";
+      }
 
     }
   </script>
@@ -57,9 +71,37 @@
 
     </form>
 
-    <p href="" onclick="showAndHide('create-user-container','login-container');
+    <form class="create-user-container" action="http://localhost:3000/create-user" method="post">
+      <h1>CREATE USER</h1>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" name="username" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+        </div>
+      </div>
+
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" name="email" placeholder="Email" aria-label="Recipient's email" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+        </div>
+      </div>
+
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" name="mpw" placeholder="Password" aria-label="Recipient's password" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+        </div>
+      </div>
+
+      <button type="submit" name="Create" value="Create">Create User</button>
+
+    </form>
+
+
+    <p class="signup-msg"href="" onclick="showAndHide('login-container','create-user-container');
                         ">Don't have an account yet? Sign up here!</p>
-    <p href="" onclick="showAndHide('login-container','create-user-container')">Already have an account? Login here!</p>
+    <p class="login-msg" href="" onclick="showAndHide('create-user-container','login-container')">Already have an account? Login here!</p>
 
 
     <hr style="width:100%;color:black;height:5px;size:5px;">
