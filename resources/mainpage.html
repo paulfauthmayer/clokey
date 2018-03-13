@@ -84,26 +84,6 @@
         });
       }
 
-      //Handler for changed option in select box1
-      function select_changed(){
-
-          const apidata = g_current_user;
-          const e = document.getElementById("sel1");
-          const selected = e.options[e.selectedIndex].text;
-
-          var entries = apidata.get("entries");
-          var entryindex = 0;
-          //Find selected element in the data structure -> by source
-          for (var i = 0; i < entries.length; i++) {
-              if(entries[i].get("source")  === selected){
-                  entryindex = i;
-              }
-          }
-          //Write the the corresponding username/pw values into the frontend
-          document.getElementById("display_username").setAttribute("value", entries[entryindex].get("username"));
-          document.getElementById("display_password").setAttribute("value", entries[entryindex].get("password"));
-      }
-
       //Handler for changed option in select box2
       function select_changed_editbox(){
 
@@ -120,9 +100,9 @@
               }
           }
           //Write the the corresponding username/pw values into the frontend
-          document.getElementById("edit_source").setAttribute("value", entries[entryindex].get("source"));
-          document.getElementById("edit_username").setAttribute("value", entries[entryindex].get("username"));
-          document.getElementById("edit_password").setAttribute("value", entries[entryindex].get("password"));
+          document.getElementById("edit_source").value = entries[entryindex].get("source");
+          document.getElementById("edit_username").value = entries[entryindex].get("username");
+          document.getElementById("edit_password").value = entries[entryindex].get("password");
       }
 
       //dynamically create select option tags and default fill fields
@@ -131,17 +111,9 @@
           const apidata = g_current_user;
 
           var entries = apidata.get("entries");
-          var selectList = document.getElementById("sel1");
           var selectList2 = document.getElementById("sel2");
 
           //Fill select element options
-          for (var i = 0; i < entries.length; i++) {
-              var option = document.createElement("option");
-              option.value = entries[i].get("source");
-              option.text = entries[i].get("source");
-              selectList.appendChild(option);
-          }
-
           for (var i = 0; i < entries.length; i++) {
               var option = document.createElement("option");
               option.value = entries[i].get("source");
@@ -150,52 +122,71 @@
           }
 
           //Default Fill username/password fields with first result
-          document.getElementById("display_username").setAttribute("value", entries[0].get("username"));
-          document.getElementById("display_password").setAttribute("value", entries[0].get("password"));
-
-          document.getElementById("edit_source").setAttribute("value", entries[0].get("source"));
-          document.getElementById("edit_username").setAttribute("value", entries[0].get("username"));
-          document.getElementById("edit_password").setAttribute("value", entries[0].get("password"));
+          document.getElementById("edit_source").value = entries[0].get("source");
+          document.getElementById("edit_username").value = entries[0].get("username");
+          document.getElementById("edit_password").value = entries[0].get("password");
       }
 
       //Clear fields
       function flush() {
-          document.getElementById("edit_source").setAttribute("value", "");
-          document.getElementById("edit_username").setAttribute("value", "");
-          document.getElementById("edit_password").setAttribute("value", "");
+          document.getElementById("edit_source").value = "";
+          document.getElementById("edit_username").value = "";
+          document.getElementById("edit_password").value = "";
       }
 
       //If the specified source already exists, call update, if not call create
       function post() {
+          _eval_source().then((val) => {
+              console.log("Fielddata", document.getElementById("edit_source").value);
+              console.log("Source exists: true or false?", val);
 
+              if(val === true){
+                  _doUpdate();
+              }
+              else{
+                  _doCreate();
+              }
+          });
       }
-
+      //Does source already exist? It does -> true
       function _eval_source () {
           return new Promise((resolve,reject) => {
               //Getting the current source field value
               let src_frontend = document.getElementById("edit_source").value;
               let entries = g_current_user.get("entries");
-              let b = false;
 
               for (var i = 0; i < entries.length; i++) {
-                  if (src_frontend === entries[i) {
-                      b = true;
+                  if (src_frontend === entries[i].get("source")) {
+                      resolve(true);
                   }
-              }
-              if (b === true) {
-                  resolve(true)
-              } else {
-                  resolve(false)
+                  else if(i === (entries.length -1)){
+                      resolve(false);
+                  }
               }
           });
       }
 
       function _doUpdate() {
 
+          var newdata = _buildUpdateData();
+          var xmlhttp = new XMLHttpRequest();
+          var url = "http://localhost:3000/update-entry?source=" + newdata.source + "&username=" + newdata.username + "&password=" + newdata.password;
+
+          xmlhttp.open("PUT", url, true);
+          xmlhttp.send();
       }
 
-      function _do_Create() {
+      function _doCreate() {
+        return;
+      }
 
+      function _buildUpdateData(){
+          let obj = {
+              "source" : "aaa.com",
+              "username" : "AAA",
+              "password" : "passw0rd"
+          }
+          return obj;
       }
 
   </script>
@@ -204,28 +195,6 @@
 
     <hr style="width:100%;color:black;height:5px;size:5px;">
     <h1>SELECT ENTRY</h1>
-    <div class="form-group">
-      <label for="sel1">Select list:</label>
-      <select class="form-control" id="sel1" onchange="select_changed()">
-          <!-- Filled dynamically -->
-      </select>
-    </div>
-
-    <div class="input-group mb-3">
-      <input id="display_username" type="text" class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
-      <div class="input-group-append">
-        <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
-      </div>
-    </div>
-
-    <div class="input-group mb-3">
-      <input id="display_password" type="text" class="form-control" placeholder="Password" aria-label="Recipient's username" aria-describedby="basic-addon2">
-      <div class="input-group-append">
-        <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
-      </div>
-    </div>
-
-    <h1>EDIT </h1>
 
     <div class="form-group">
       <label for="sel2">Select list:</label>
@@ -235,21 +204,21 @@
     </div>
 
     <div class="input-group mb-3">
-      <input id="edit_source" type="text" class="form-control" placeholder="Source" aria-label="Recipient's username" aria-describedby="basic-addon2">
+      <input id="edit_source"class="form-control" placeholder="Source" aria-label="Recipient's username" aria-describedby="basic-addon2">
       <div class="input-group-append">
         <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
       </div>
     </div>
 
     <div class="input-group mb-3">
-      <input id="edit_username" type="text" class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+      <input id="edit_username"class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
       <div class="input-group-append">
         <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
       </div>
     </div>
 
     <div class="input-group mb-3">
-      <input id="edit_password" type="text" class="form-control" placeholder="Password" aria-label="Recipient's username" aria-describedby="basic-addon2">
+      <input id="edit_password" class="form-control" placeholder="Password" aria-label="Recipient's username" aria-describedby="basic-addon2">
       <div class="input-group-append">
         <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
       </div>
