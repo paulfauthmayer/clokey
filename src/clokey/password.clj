@@ -20,8 +20,8 @@
 (def easy-range      (concat (range 48 58)
                              (range 97 123)
                              (range 65 91)
-                             (range 33 39)
-                             '(42 43 63 64)))
+                             (range 36 39)
+                             '(33 34 42 43 63 64)))
 
 (defn get-character-sequence [& ranges]
   (map char (apply concat ranges)))
@@ -46,9 +46,9 @@
    - at least one lower case letter
    - at least one upper case letter
    - at least one digit
-   - at least one special character: - @ # $ % ^ & + ="
+   - at least one special character: - @ $ % ^ & + ="
   (let [pattern
-        #"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[-@#$%^&+=_])(?=\S+$).{10,30}$"]
+        #"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[-@$%^&+=_])(?=\S+$).{10,30}$"]
     (and
      (string? pw)
      (re-matches pattern pw)

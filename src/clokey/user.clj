@@ -70,15 +70,15 @@
   (defn create-entry
     "creates entry if requirements are met, does other stuff otherwise" ;TODO: REDACT!
     ([source username pw]
-     (if (password/valid? pw)
-      (do
-        {:source source
-         :username username
-         :password  pw})))
-    ([source username]
-     {:source source
-      :username username
-      :password (apply password/generate-password '())}))
+     (println source username "." pw ".")
+     (cond
+       (password/valid? pw) (hash-map :source source
+                                      :username username
+                                      :password pw)
+       (or (= pw "")(= pw nil)) (hash-map :source source
+                                          :username username
+                                          :password (apply password/generate-password '()))
+       :else nil)))
 
   (defn set-entry
     ""
@@ -97,8 +97,11 @@
   (defn get-entry
     ""
     [username source-name]
+    (println "username" username "source-name" source-name)
     (let [user (get-user username)]
+      (println "user" user)
       (let [entries (user :entries)]
+        (println "entries:" entries)
        (filter
         #(re-matches (re-pattern source-name) (:source %))
         entries))))
@@ -128,9 +131,13 @@
          (->> (combine-entrydata
                (get entry-split source-name)
                new-data)
+              (print-and-return ,,,)
               (vector ,,,)
+              (print-and-return ,,,)
               (into (get entry-split nil) ,,,)
+              (print-and-return ,,,)
               (assoc user :entries ,,,)
+              (print-and-return ,,,)
               (mc/update-by-id
                db
                "users"

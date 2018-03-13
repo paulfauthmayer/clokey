@@ -135,63 +135,31 @@
       }
 
       //If the specified source already exists, call update, if not call create
-      function post() {
-          _eval_source().then((val) => {
-              console.log("Fielddata", document.getElementById("edit_source").value);
-              console.log("Source exists: true or false?", val);
-
-              if(val === true){
-                  _doUpdate();
-              }
-              else{
-                  _doCreate();
-              }
-          });
-      }
-      //Does source already exist? It does -> true
-      function _eval_source () {
-          return new Promise((resolve,reject) => {
-              //Getting the current source field value
-              let src_frontend = document.getElementById("edit_source").value;
-              let entries = g_current_user.get("entries");
-
-              for (var i = 0; i < entries.length; i++) {
-                  if (src_frontend === entries[i].get("source")) {
-                      resolve(true);
-                  }
-                  else if(i === (entries.length -1)){
-                      resolve(false);
-                  }
-              }
-          });
-      }
-
-      function _doUpdate() {
-
+      function doCreateOrUpdate() {
           var newdata = _buildUpdateData();
           var xmlhttp = new XMLHttpRequest();
-          const e = document.getElementById("sel2");
-          const selected = e.options[e.selectedIndex].text;
-          var url = "http://localhost:3000/update-entry?old-source=" + selected + "&source=" + newdata.source + "&username=" + newdata.username + "&password=" + newdata.password;
+          var url = "http://localhost:3000/create-or-update-entry?source=" + newdata.source + "&username=" + newdata.username + "&password=" + newdata.password;
 
-          xmlhttp.open("PUT", url, true);
-          xmlhttp.send();
-      }
-
-      function _doCreate() {
-          var newdata = _buildUpdateData();
-          var xmlhttp = new XMLHttpRequest();
-          var url = "http://localhost:3000/create-entry?source" + newdata.source + "&username=" + newdata.username + "&password=" + newdata.password;
 
           xmlhttp.open("POST", url, true);
           xmlhttp.send();
+      }
+
+      function doDelete() {
+        var xmlhttp = new XMLHttpRequest();
+        const e = document.getElementById("sel2");
+        const selected = e.options[e.selectedIndex].text;
+        var url = "http://localhost:3000/delete-entry?source=" + selected;
+
+        xmlhttp.open("DELETE", url, true);
+        xmlhttp.send();
       }
 
       function _buildUpdateData(){
           let obj = {
               "source" : document.getElementById("edit_source").value,
               "username" : document.getElementById("edit_username").value,
-              "password" : document.getElementById("edit_password").value
+              "password" : encodeURIComponent(document.getElementById("edit_password").value)
           }
           return obj;
       }
@@ -213,26 +181,26 @@
     <div class="input-group mb-3">
       <input id="edit_source"class="form-control" placeholder="Source" aria-label="Recipient's username" aria-describedby="basic-addon2">
       <div class="input-group-append">
-        <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+        <span class="input-group-text side-button-width" id="basic-addon2">Site</span>
       </div>
     </div>
 
     <div class="input-group mb-3">
       <input id="edit_username"class="form-control" placeholder="Username" aria-label="Recipient's username" aria-describedby="basic-addon2">
       <div class="input-group-append">
-        <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+        <span class="input-group-text side-button-width" id="basic-addon2">Username</span>
       </div>
     </div>
 
     <div class="input-group mb-3">
       <input id="edit_password" class="form-control" placeholder="Password" aria-label="Recipient's username" aria-describedby="basic-addon2">
       <div class="input-group-append">
-        <span class="input-group-text side-button-width" id="basic-addon2">Copy</span>
+        <span class="input-group-text side-button-width" id="basic-addon2">Password</span>
       </div>
     </div>
     <button type="button" onClick="flush()">Clear</button>
-    <button type="button" onClick="post()">Create/Update</button>
-    <button type="button" onClick="delete()">Delete</button>
+    <button type="button" onClick="doCreateOrUpdate()">Create/Update</button>
+    <button type="button" onClick="doDelete()">Delete</button>
   </div>
   <hr style="width:100%;color:black;height:5px;size:5px;">
   <form class="" action="http://localhost:3000/logout" method="get">

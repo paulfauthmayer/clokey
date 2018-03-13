@@ -22,6 +22,11 @@
   width: 100%;
 }
 
+.input-group-append {
+  width: 100px;
+  background-color: red;s
+}
+
 .login-msg {
   display: none;
 }

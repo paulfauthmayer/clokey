@@ -6,7 +6,6 @@
             [clokey.user :as user]
             [clokey.utils :as utils]
             [buddy.hashers :as hashers]
-            [ring.util.json-response :as json-response]
             ; ↓ these are for buddy.auth
             [compojure.response :refer [render]]
             [clojure.java.io :as io]
@@ -19,8 +18,10 @@
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]])
   (:import  [org.bson.types.ObjectId]))
 
+(use 'ring.util.json-response)
 
 ; <editor-fold> -------- AUTHENTICATION -----------
+
 
 ;; AUTHENTICATION
 
@@ -83,15 +84,6 @@
   (POST "/login" [] login-authenticate)
   (GET "/logout" [] logout)
 
-  ; CREATE
-  (POST "/create-user" [username email mpw :as r]
-    (user/create-user username email mpw)
-    (-> (redirect "/")
-        (assoc :session {:identity (keyword username)})))
-  (POST "/create-entry" [source username password :as r]
-    (->> (user/create-entry source username password)
-         (user/set-entry get-identity ,,,)))
-
   ; READ
   (GET "/get-current-user" [:as r]
     (-> (get-identity r)
@@ -104,23 +96,40 @@
         (user/get-entry ,,, source-name)
         (json-response ,,,)))
 
+  ; CREATE
+  (POST "/create-user" [username email mpw :as r]
+    (user/create-user username email mpw)
+    (-> (redirect "/")
+        (assoc :session {:identity (keyword username)})))
+
+  (POST "/create-or-update-entry" [source username password :as r]
+    (println "create or update:")
+    (println source username password)
+    (let [user (get-identity r)]
+      (if (empty? (user/get-entry user source))
+        (do
+          (println "empty true")
+          (some->>  (user/create-entry source username password)
+                    (user/print-and-return ,,,)
+                    (user/set-entry user ,,,)))
+        (do
+          (println "empty false")
+          (some->>  (user/create-entry source username password)
+                    (user/print-and-return ,,,)
+                    (user/update-entry user source ,,,))))))
+
   ; UPDATE
   (PUT "/update-user" [userdata :as r]
     (-> (get-identity r)
         (user/update-user ,,, userdata)))
-  (PUT "/update-entry" [old-source source username password :as r]
-    (let [new-data (hash-map :source source :password password :username username)]
-      (println "new-data" new-data)
-      (-> (get-identity r)
-          (user/update-entry ,,, old-source new-data))))
 
   ; DELETE
   (DELETE "/delete-user" [:as r]
     (-> (get-identity r)
         (user/delete-user ,,,)))
-  (DELETE "/delete-entry" [source-name :as r]
+  (DELETE "/delete-entry" [source :as r]
     (-> (get-identity r)
-        (user/delete-entry ,,, source-name)))
+        (user/delete-entry ,,, source)))
 
   ; ELSE
   (route/not-found "Not Found")
