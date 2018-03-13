@@ -111,16 +111,24 @@
      :username (or (:username new-data) (:username old-data))
      :password (or (:password new-data) (:password old-data))})
 
+  (defn print-and-return [input]
+    (println input)
+    input)
+
   (defn update-entry
     "Updates a given entry"
     [username source-name new-data]
+    (println "NEW DATA" new-data)
     (let [user (get-user username)
           entry-split (group-by
                         #(re-matches (re-pattern source-name) (:source %))
                         (:entries user))]
+         (println "found" (get entry-split source-name))
+         (println "not found" (get entry-split nil))
          (->> (combine-entrydata
                (get entry-split source-name)
                new-data)
+              (vector ,,,)
               (into (get entry-split nil) ,,,)
               (assoc user :entries ,,,)
               (mc/update-by-id

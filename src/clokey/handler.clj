@@ -84,8 +84,10 @@
   (GET "/logout" [] logout)
 
   ; CREATE
-  (POST "/create-user" [username email mpw]
-    (user/create-user username email mpw))
+  (POST "/create-user" [username email mpw :as r]
+    (user/create-user username email mpw)
+    (-> (redirect "/")
+        (assoc :session {:identity (keyword username)})))
   (POST "/create-entry" [source username password :as r]
     (->> (user/create-entry source username password)
          (user/set-entry get-identity ,,,)))
@@ -106,10 +108,11 @@
   (PUT "/update-user" [userdata :as r]
     (-> (get-identity r)
         (user/update-user ,,, userdata)))
-  (PUT "/update-entry" [source username password :as r]
+  (PUT "/update-entry" [old-source source username password :as r]
     (let [new-data (hash-map :source source :password password :username username)]
+      (println "new-data" new-data)
       (-> (get-identity r)
-          (user/update-entry ,,, source new-data))))
+          (user/update-entry ,,, old-source new-data))))
 
   ; DELETE
   (DELETE "/delete-user" [:as r]

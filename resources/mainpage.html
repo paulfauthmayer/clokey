@@ -172,7 +172,7 @@
           var xmlhttp = new XMLHttpRequest();
           const e = document.getElementById("sel2");
           const selected = e.options[e.selectedIndex].text;
-          var url = "http://localhost:3000/update-entry?source-name=" + selected + "&source=" + newdata.source + "&username=" + newdata.username + "&password=" + newdata.password;
+          var url = "http://localhost:3000/update-entry?old-source=" + selected + "&source=" + newdata.source + "&username=" + newdata.username + "&password=" + newdata.password;
 
           xmlhttp.open("PUT", url, true);
           xmlhttp.send();
@@ -181,7 +181,7 @@
       function _doCreate() {
           var newdata = _buildUpdateData();
           var xmlhttp = new XMLHttpRequest();
-          var url = "http://localhost:3000/update-entry?source" + newdata.source + "&username=" + newdata.username + "&password=" + newdata.password;
+          var url = "http://localhost:3000/create-entry?source" + newdata.source + "&username=" + newdata.username + "&password=" + newdata.password;
 
           xmlhttp.open("POST", url, true);
           xmlhttp.send();
