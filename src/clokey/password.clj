@@ -48,7 +48,7 @@
    - at least one digit
    - at least one special character: - @ $ % ^ & + ="
   (let [pattern
-        #"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[-@$%^&+=_])(?=\S+$).{10,30}$"]
+        #"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[-@$%^&+=_!])(?=\S+$).{10,30}$"]
     (and
      (string? pw)
      (re-matches pattern pw)

@@ -91,6 +91,7 @@
         (user/get-user ,,,)
         (user/remove-id ,,,)
         (user/remove-mpw ,,,)
+        (user/sort-entries ,,,)
         (json-response ,,,)))
   (GET "/get-entry" [source-name :as r]
     (-> (get-identity r)
@@ -113,7 +114,8 @@
         (do
           (println "empty false")
           (some->>  (user/create-entry source username password)
-                    (user/update-entry user source ,,,))))))
+                    (user/update-entry user source ,,,)))))
+    (redirect "/"))
 
   ; UPDATE
   (PUT "/update-user" [userdata :as r]

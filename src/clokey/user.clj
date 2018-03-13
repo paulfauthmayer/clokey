@@ -105,12 +105,24 @@
         #(re-matches (re-pattern source-name) (:source %))
         entries))))
 
-  (defn combine-entrydata
+  (defn combine-entrydata-old
     "Helper function combining old existing entry data with new input data."
     [old-data new-data]
     {:source (or (:source new-data) (:source old-data))
      :username (or (:username new-data) (:username old-data))
      :password (or (:password new-data) (:password old-data))})
+
+  (defn combine-entrydata
+    "Helper function combining old existing entry data with new input data.
+     Does the same as the one above, albeit recursively."
+    [old-data new-data]
+    (loop [result {}
+           ks (keys (first old-data))]
+      (if (empty? ks)
+        result
+        (let [key (first ks)]
+          (recur (assoc result key (or (get new-data key) (get old-data key)))
+                 (rest ks))))))
 
   (defn update-entry
     "Reads an entry from database and updates it, persists the user object back to the db"
@@ -156,4 +168,10 @@
   (defn remove-mpw
     "Removes master password from the user object, master password needs to stay secure"
     [input]
-    (dissoc input :mpw)))
+    (dissoc input :mpw))
+
+  (defn sort-entries
+    [user]
+    (->> (user :entries)
+         (sort-by :source ,,,)
+         (assoc user :entries ,,,))))

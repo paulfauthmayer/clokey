@@ -170,7 +170,7 @@
 
   <div id="wrapper">
 
-    <h1>CLOKEY</h1>
+    <h1><span class="larger-pls">C</span>LOKE<span class="larger-pls">Y</span> </h1>
     <hr style="width:100%;color:black;height:5px;size:5px;">
 
 
@@ -206,11 +206,15 @@
         </span>
       </div>
     </div>
-    <button type="button" onClick="flush()" class="btn btn-default">Clear</button>
-    <button type="button" onClick="doCreateOrUpdate()" class="btn btn-default">Create/Update</button>
-    <button type="button" onClick="doDelete()" class="btn btn-default">Delete</button>
 
     <hr style="width:100%;color:black;height:5px;size:5px;">
+
+
+    <button type="button" onClick="flush()" class="btn btn-default">Clear</button>
+    <button type="button" onClick="doCreateOrUpdate();window.location.reload();" class="btn btn-default">Create/Update</button>
+    <button type="button" onClick="doDelete()" class="btn btn-default">Delete</button>
+
+    <!-- <hr style="width:100%;color:black;height:5px;size:5px;"> -->
     <form class="" action="http://localhost:3000/logout" method="get">
         <button type="submit" name="button" class="btn btn-default">Logout</button>
     </form>
