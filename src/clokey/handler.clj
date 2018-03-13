@@ -5,13 +5,14 @@
             [clojure.string :as string]
             [clokey.user :as user]
             [clokey.utils :as utils]
+            [buddy.hashers :as hashers]
             ; ↓ these are for buddy.auth
             [compojure.response :refer [render]]
             [clojure.java.io :as io]
             [ring.util.response :refer [response redirect content-type]]
             [ring.middleware.session :refer [wrap-session]]
             [ring.middleware.params :refer [wrap-params]]
-            [ring.adapter.jetty :as jetty]
+            ;[ring.adapter.jetty :as jetty]
 
             [buddy.auth :refer [authenticated? throw-unauthorized]]
             [buddy.auth.backends.session :refer [session-backend]]
@@ -60,8 +61,9 @@
         session (:session request)
         found-password (:mpw (user/get-user username))]
     ;TODO: do this with encryption
-    (println (keys request))
-    (if (and found-password (= found-password password))
+    (if (and
+         found-password
+         (= found-password password))
       (let [updated-session (assoc session :identity (keyword username))]
         (-> (redirect "/")
             (assoc :session updated-session)))
@@ -71,6 +73,11 @@
 ; </editor-fold>
 
 ;; define routes
+(defn get-identity
+  [request]
+  (-> (:session request)
+      (:identity ,,,)))
+
 (defroutes app-routes
 
   ;; NAVIGATION
@@ -86,8 +93,11 @@
     (user/set-entry user (user/create-entry source username password)))
 
   ; READ
-  (GET "/get-user" [username]
-    (json-response (user/remove-id (user/get-user username))))
+  (GET "/get-current-user" [:as r]
+    (-> (get-identity r)
+        (user/get-user ,,,)
+        (user/remove-id ,,,)
+        (json-response ,,,)))
   (GET "/get-entry" [username source-name]
     (json-response (user/get-entry username source-name)))
 
