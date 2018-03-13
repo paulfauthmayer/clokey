@@ -170,21 +170,28 @@
 
           var newdata = _buildUpdateData();
           var xmlhttp = new XMLHttpRequest();
-          var url = "http://localhost:3000/update-entry?source=" + newdata.source + "&username=" + newdata.username + "&password=" + newdata.password;
+          const e = document.getElementById("sel2");
+          const selected = e.options[e.selectedIndex].text;
+          var url = "http://localhost:3000/update-entry?source-name=" + selected + "&source=" + newdata.source + "&username=" + newdata.username + "&password=" + newdata.password;
 
           xmlhttp.open("PUT", url, true);
           xmlhttp.send();
       }
 
       function _doCreate() {
-        return;
+          var newdata = _buildUpdateData();
+          var xmlhttp = new XMLHttpRequest();
+          var url = "http://localhost:3000/update-entry?source" + newdata.source + "&username=" + newdata.username + "&password=" + newdata.password;
+
+          xmlhttp.open("POST", url, true);
+          xmlhttp.send();
       }
 
       function _buildUpdateData(){
           let obj = {
-              "source" : "aaa.com",
-              "username" : "AAA",
-              "password" : "passw0rd"
+              "source" : document.getElementById("edit_source").value,
+              "username" : document.getElementById("edit_username").value,
+              "password" : document.getElementById("edit_password").value
           }
           return obj;
       }
@@ -227,6 +234,10 @@
     <button type="button" onClick="post()">Create/Update</button>
     <button type="button" onClick="delete()">Delete</button>
   </div>
+  <hr style="width:100%;color:black;height:5px;size:5px;">
+  <form class="" action="http://localhost:3000/logout" method="get">
+      <button type="submit" name="button">Logout</button>
+  </form>
 
   <!-->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
