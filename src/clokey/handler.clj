@@ -4,6 +4,7 @@
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [clojure.string :as string]
             [clokey.user :as user]
+            [clokey.password :as cpw]
             [clokey.utils :as utils]
             [buddy.hashers :as hashers]
             ; ↓ these are for buddy.auth
@@ -21,9 +22,6 @@
 (use 'ring.util.json-response)
 
 ; <editor-fold> -------- AUTHENTICATION -----------
-
-
-;; AUTHENTICATION
 
 ; Login
 
@@ -85,7 +83,8 @@
   (POST "/login" [] login-authenticate)
   (GET "/logout" [] logout)
 
-  ; READ
+  ; USERS
+
   (GET "/get-current-user" [:as r]
     (-> (get-identity r)
         (user/get-user ,,,)
@@ -93,16 +92,29 @@
         (user/remove-mpw ,,,)
         (user/sort-entries ,,,)
         (json-response ,,,)))
+
+  (POST "/create-user" [username email mpw]
+    (if (user/user-valid? username email mpw)
+      (do
+        (user/create-user username email mpw)
+        (-> (redirect "/")
+            (assoc :session {:identity (keyword username)})))
+      (redirect "/login")))
+
+  (PUT "/update-user" [userdata :as r]
+    (-> (get-identity r)
+        (user/update-user ,,, userdata)))
+
+  (DELETE "/delete-user" [:as r]
+    (-> (get-identity r)
+        (user/delete-user ,,,)))
+
+  ; ENTRIES
+
   (GET "/get-entry" [source-name :as r]
     (-> (get-identity r)
         (user/get-entry ,,, source-name)
         (json-response ,,,)))
-
-  ; CREATE
-  (POST "/create-user" [username email mpw :as r]
-    (user/create-user username email mpw)
-    (-> (redirect "/")
-        (assoc :session {:identity (keyword username)})))
 
   (POST "/create-or-update-entry" [source username password :as r]
     (let [user (get-identity r)]
@@ -114,23 +126,14 @@
         (do
           (println "empty false")
           (some->>  (user/create-entry source username password)
-                    (user/update-entry user source ,,,)))))
-    (redirect "/"))
+                    (user/update-entry user source ,,,))))))
 
-  ; UPDATE
-  (PUT "/update-user" [userdata :as r]
-    (-> (get-identity r)
-        (user/update-user ,,, userdata)))
-
-  ; DELETE
-  (DELETE "/delete-user" [:as r]
-    (-> (get-identity r)
-        (user/delete-user ,,,)))
   (DELETE "/delete-entry" [source :as r]
     (-> (get-identity r)
         (user/delete-entry ,,, source)))
 
   ; ELSE
+
   (route/not-found "Not Found"))
 
 (defn unauthorized-handler

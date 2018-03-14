@@ -46,7 +46,7 @@
    - at least one lower case letter
    - at least one upper case letter
    - at least one digit
-   - at least one special character: - @ $ % ^ & + ="
+   - at least one special character: - @ $ % ^ & + = _ !"
   (let [pattern
         #"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[-@$%^&+=_!])(?=\S+$).{10,30}$"]
     (and

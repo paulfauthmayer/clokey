@@ -4,6 +4,17 @@
             [cheshire.core :refer :all]
             [buddy.hashers :as hashers]))
 
+; <editor-fold> -----------HELPER FUNCTIONS-------------
+
+(defn nil-or-empty?
+  [input]
+  (cond
+    (nil? input) true
+    (empty? input) true
+    (= input "") true
+    :else false))
+
+; </editor-fold>
 
 ; <editor-fold> ---------ENCRYPTION---------------------
 

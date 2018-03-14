@@ -26,7 +26,8 @@
     (mc/save-and-return db "users" user))
 
   (defn create-user
-    "Creates a user object and passes the object to save-user to save into the db, hashes master password"
+    "Creates a user object and passes the object to save-user to save
+     into the db, hashes master password"
     [username email mpw]
     (let [new-user
           {:name username
@@ -55,7 +56,8 @@
      :entries (or (:entries old-data) [])})
 
   (defn update-user
-    "Update userdata by a given input username, combines input data with existing data"
+    "Update userdata by a given input username, combines input data with
+     existing data"
     [username userdata]
     (let [user (get-user username)]
       (mc/update-by-id  db
@@ -70,20 +72,22 @@
   ; <editor-fold> --------ENTRY CRUD -----------
 
   (defn create-entry
-    "Creates an entry object. Password can be either specified or auto-generated. Object will not be linked to user by this function"
+    "Creates an entry object. Password can be either specified or
+     auto-generated. Object will not be linked to user by this function"
     ([source username pw]
      (println source username "." pw ".")
      (cond
        (password/valid? pw) (hash-map :source source
                                       :username username
                                       :password pw)
-       (or (= pw "")(= pw nil)) (hash-map :source source
-                                          :username username
-                                          :password (apply password/generate-password '()))
+       (utils/nil-or-empty? pw) (hash-map :source source
+                                      :username username
+                                      :password (apply password/generate-password '()))
        :else nil)))
 
   (defn set-entry
-    "Associates an entry object to a user. Persists the user object to the database"
+    "Associates an entry object to a user. Persists the user object to the
+     database"
     [username entry]
     (let [user (get-user username)]
       (println user)
@@ -125,53 +129,71 @@
                  (rest ks))))))
 
   (defn update-entry
-    "Reads an entry from database and updates it, persists the user object back to the db"
+    "Reads an entry from database and updates it, persists the user object
+     back to the db"
     [username source-name new-data]
     (let [user (get-user username)
           entry-split (group-by
                         #(re-matches (re-pattern source-name) (:source %))
                         (:entries user))]
-         (->> (combine-entrydata
-               (get entry-split source-name)
-               new-data)
-              (vector ,,,)
-              (into (get entry-split nil) ,,,)
-              (assoc user :entries ,,,)
-              (mc/update-by-id
-               db
-               "users"
-               (:_id user)
-               ,,,))))
+         (some->>  (combine-entrydata
+                    (get entry-split source-name)
+                    new-data)
+                   (vector ,,,)
+                   (into (get entry-split nil) ,,,)
+                   (assoc user :entries ,,,)
+                   (mc/update-by-id
+                    db
+                    "users"
+                    (:_id user)
+                    ,,,))))
 
   (defn delete-entry
-    "Delete an entry by a given source, persists the modified user objects back to the db"
+    "Delete an entry by a given source, persists the modified user objects
+     back to the db"
     [username source-name]
     (let [user (get-user username)]
-      (->> (user :entries)
-           (filter
-             #(not (re-matches (re-pattern source-name) (:source %)))
-             ,,,)
-           (assoc user :entries ,,,)
-           (mc/update-by-id
-            db
-            "users"
-            (:_id user)
-            ,,,))))
+      (some->> (user :entries)
+               (filter
+                 #(not (re-matches (re-pattern source-name) (:source %)))
+                 ,,,)
+               (assoc user :entries ,,,)
+               (mc/update-by-id
+                db
+                "users"
+                (:_id user)
+                ,,,))))
 
   ; </editor-fold>
 
   (defn remove-id
-    "Removes Mongo db specific id from user object, the id should not be passed to the frontend"
+    "Removes Mongo db specific id from user object, the id should not be
+     passed to the frontend"
     [input]
     (dissoc input :_id))
 
   (defn remove-mpw
-    "Removes master password from the user object, master password needs to stay secure"
+    "Removes master password from the user object, master password needs to
+     stay secure"
     [input]
     (dissoc input :mpw))
 
   (defn sort-entries
+    "Sorts the entries of a given user alphabetically by sourcename"
     [user]
     (->> (user :entries)
          (sort-by :source ,,,)
-         (assoc user :entries ,,,))))
+         (assoc user :entries ,,,)))
+
+  (defn user-valid?
+    "Evaluates whether the user is valid for creation. For this, neither of the
+     values may be nil, empty or ''. Also, the username may not yet be present
+     in the db."
+    [username email mpw]
+    (cond
+      (utils/nil-or-empty? username) false
+      (utils/nil-or-empty? email) false
+      (utils/nil-or-empty? mpw) false
+      (password/valid? mpw) false
+      (get-user username) false
+      :else true)))
