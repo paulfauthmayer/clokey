@@ -1,7 +1,6 @@
 (ns clokey.user
   (:require [clojure.string :as string]
             [clojure.java.io :as io]
-            [cheshire.core :refer :all]
             [clokey.password :as password]
             [clokey.utils :as utils]
             [monger.core :as mg]

@@ -7,6 +7,7 @@
             [clokey.password :as cpw]
             [clokey.utils :as utils]
             [buddy.hashers :as hashers]
+            [ring.util.json-response :refer [json-response]]
             ; ↓ these are for buddy.auth
             [compojure.response :refer [render]]
             [clojure.java.io :as io]
@@ -18,8 +19,6 @@
             [buddy.auth.backends.session :refer [session-backend]]
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]])
   (:import  [org.bson.types.ObjectId]))
-
-(use 'ring.util.json-response)
 
 ; <editor-fold> -------- AUTHENTICATION -----------
 

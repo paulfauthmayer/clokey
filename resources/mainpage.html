@@ -27,6 +27,10 @@
         _parse_get_user().then((resp) => {
             g_current_user = resp;
             set_user_fields();
+
+            var logout_btn = document.getElementById("logout")
+            logout_btn.innerHTML = "Current User: <span class=usr>" + g_current_user.get("name") + "</span> | " + logout_btn.innerHTML
+
         });
       }
 
@@ -217,7 +221,7 @@
 
     <!-- <hr style="width:100%;color:#22609e;height:5px;size:5px;"> -->
     <form class="" action="http://localhost:3000/logout" method="get">
-        <button type="submit" name="button" class="btn btn-default">Logout</button>
+        <button id="logout" type="submit" name="button" class="btn btn-default">Logout</button>
     </form>
 
   </div>

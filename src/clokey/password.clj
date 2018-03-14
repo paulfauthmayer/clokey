@@ -1,7 +1,6 @@
 (ns clokey.password
   (:require [clojure.string :as string]
             [clojure.java.io :as io]
-            [cheshire.core :refer :all]
             [clokey.utils :as utils]))
 
 ; <editor-fold> --------PASSWORD ACCESS-----------

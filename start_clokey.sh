@@ -1,3 +1,3 @@
 #!/bin/bash
-lein ring server
-echo "HI!"
+lein ring server &
+cd /electron-quick-start && npm start
